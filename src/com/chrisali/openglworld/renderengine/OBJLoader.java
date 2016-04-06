@@ -13,10 +13,10 @@ import org.lwjgl.util.vector.Vector3f;
 import com.chrisali.openglworld.models.RawModel;
 
 public class OBJLoader {
-	public static RawModel loadObjModel(String fileName, Loader loader) {
+	public static RawModel loadObjModel(String fileName, String directory, Loader loader) {
  		FileReader fr = null;
 		
-		try {fr = new FileReader(new File("res/" + fileName + ".obj"));} 
+		try {fr = new FileReader(new File("res\\" + directory + "\\" + fileName + ".obj"));} 
 		catch (FileNotFoundException e) {System.err.println("Could not load file: " + fileName);}
 		
 		BufferedReader reader = new BufferedReader(fr);

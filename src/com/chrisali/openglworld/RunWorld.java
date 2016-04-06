@@ -10,6 +10,7 @@ import org.lwjgl.util.vector.Vector3f;
 import com.chrisali.openglworld.entities.Camera;
 import com.chrisali.openglworld.entities.Entity;
 import com.chrisali.openglworld.entities.Light;
+import com.chrisali.openglworld.entities.Player;
 import com.chrisali.openglworld.models.TexturedModel;
 import com.chrisali.openglworld.renderengine.DisplayManager;
 import com.chrisali.openglworld.renderengine.Loader;
@@ -26,22 +27,29 @@ public class RunWorld {
 		DisplayManager.createDisplay();
 		Loader loader = new Loader();
 		MasterRenderer renderer = new MasterRenderer();
-		
 		Light light = new Light(new Vector3f(20000, 40000, 20000), new Vector3f(1, 1, 1));
-		Camera camera = new Camera();
+		
+		//================================== Player ===========================================================
+		
+		TexturedModel bunny =  new TexturedModel(OBJLoader.loadObjModel("bunny", "entities", loader), 
+			    								new ModelTexture(loader.loadTexture("bunny", "entities")));
+		Player player = new Player(bunny, new Vector3f(100, 0, -50), 0, 0, 0, 0.5f);
+		
+		Camera camera = new Camera(player);
+		camera.setMouseSensitivity(0.2f);
 		
 		//================================= Entities ==========================================================
 		
-		TexturedModel tree1 =  new TexturedModel(OBJLoader.loadObjModel("tree", loader), 
-											    new ModelTexture(loader.loadTexture("tree")));
-		TexturedModel tree2 =  new TexturedModel(OBJLoader.loadObjModel("lowPolyTree", loader), 
-			    								new ModelTexture(loader.loadTexture("lowPolyTree")));
-		TexturedModel grass = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader), 
-		  										new ModelTexture(loader.loadTexture("grassTexture")));
-		TexturedModel flower = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader), 
-												new ModelTexture(loader.loadTexture("flower")));
-		TexturedModel fern =  new TexturedModel(OBJLoader.loadObjModel("fern", loader), 
-				  								new ModelTexture(loader.loadTexture("fern")));
+		TexturedModel tree1 =  new TexturedModel(OBJLoader.loadObjModel("tree", "entities", loader), 
+											    new ModelTexture(loader.loadTexture("tree", "entities")));
+		TexturedModel tree2 =  new TexturedModel(OBJLoader.loadObjModel("lowPolyTree", "entities", loader), 
+			    								new ModelTexture(loader.loadTexture("lowPolyTree", "entities")));
+		TexturedModel grass = new TexturedModel(OBJLoader.loadObjModel("grassModel", "entities", loader), 
+		  										new ModelTexture(loader.loadTexture("grassTexture", "entities")));
+		TexturedModel flower = new TexturedModel(OBJLoader.loadObjModel("grassModel", "entities", loader), 
+												new ModelTexture(loader.loadTexture("flower", "entities")));
+		TexturedModel fern =  new TexturedModel(OBJLoader.loadObjModel("fern", "entities", loader), 
+				  								new ModelTexture(loader.loadTexture("fern", "entities")));
 		
 		grass.getTexture().setHasTransparency(true);
 		grass.getTexture().setUseFakeLighting(true);
@@ -70,13 +78,13 @@ public class RunWorld {
 		
 		//================================= Terrain ==========================================================
 		
-		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy2"));
-		TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("mud"));
-		TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("pinkFlowers"));
-		TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("path"));
+		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy3", "terrain"));
+		TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("dirt", "terrain"));
+		TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("mud", "terrain"));
+		TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("mossPath256", "terrain"));
 		
 		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
-		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
+		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap", "terrain"));
 		
 		List<Terrain> terrains = new ArrayList<>();
 		terrains.add(new Terrain( 0,  0, loader, texturePack, blendMap));
@@ -88,6 +96,9 @@ public class RunWorld {
 		
 		while (!Display.isCloseRequested()) {
 			camera.move();
+			player.move();
+			
+			renderer.processEntity(player);
 			
 			for(Entity entity : entities)
 				renderer.processEntity(entity);
