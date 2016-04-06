@@ -87,10 +87,10 @@ public class RunWorld {
 		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap", "terrain"));
 		
 		List<Terrain> terrains = new ArrayList<>();
-		terrains.add(new Terrain( 0,  0, loader, texturePack, blendMap));
-		terrains.add(new Terrain( 0, -1, loader, texturePack, blendMap));
-		terrains.add(new Terrain(-1, -1, loader, texturePack, blendMap));
-		terrains.add(new Terrain(-1,  0, loader, texturePack, blendMap));
+		terrains.add(new Terrain( 0,  0, "heightMap", "terrain", loader, texturePack, blendMap));
+		terrains.add(new Terrain( 0, -1, "heightMap", "terrain", loader, texturePack, blendMap));
+		terrains.add(new Terrain(-1, -1, "heightMap", "terrain", loader, texturePack, blendMap));
+		terrains.add(new Terrain(-1,  0, "heightMap", "terrain", loader, texturePack, blendMap));
 		
 		//=============================== Main Loop ==========================================================
 		
