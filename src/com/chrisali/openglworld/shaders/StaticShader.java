@@ -1,6 +1,7 @@
 package com.chrisali.openglworld.shaders;
 
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector3f;
 
 import com.chrisali.openglworld.entities.Camera;
 import com.chrisali.openglworld.entities.Light;
@@ -8,8 +9,8 @@ import com.chrisali.openglworld.toolbox.Utilities;
 
 public class StaticShader extends ShaderProgram {
 
-	private static final String VERTEX_FILE = "src/shaders/vertexShader.txt";
-	private static final String FRAGMENT_FILE = "src/shaders/fragmentShader.txt";
+	private static final String VERTEX_FILE = SHADER_ROOT_PATH + "shaders\\vertexShader.txt";
+	private static final String FRAGMENT_FILE = SHADER_ROOT_PATH + "shaders\\fragmentShader.txt";
 	
 	private int location_transformationMatrix;
 	private int location_projectionMatrix;
@@ -18,7 +19,8 @@ public class StaticShader extends ShaderProgram {
 	private int location_lightColor;
 	private int location_shineDamper;
 	private int location_reflectivity;
-	
+	private int location_useFakeLighting;
+	private int location_skyColor;
 	
 	public StaticShader() {
 		super(VERTEX_FILE, FRAGMENT_FILE);
@@ -40,6 +42,16 @@ public class StaticShader extends ShaderProgram {
 		location_lightColor = super.getUniformLocation("lightColor");
 		location_shineDamper = super.getUniformLocation("shineDamper");
 		location_reflectivity = super.getUniformLocation("reflectivity");
+		location_useFakeLighting = super.getUniformLocation("useFakeLighting");
+		location_skyColor = super.getUniformLocation("skyColor");
+	}
+	
+	public void loadSkyColor(float r, float g, float b) {
+		super.loadVector(location_skyColor, new Vector3f(r, g, b));
+	}
+	
+	public void loadFakeLightingVariable(boolean useFake) {
+		super.loadBoolean(location_useFakeLighting, useFake);
 	}
 	
 	public void loadShineVariables(float damper, float reflectivity) {

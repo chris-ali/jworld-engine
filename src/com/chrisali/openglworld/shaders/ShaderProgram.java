@@ -12,6 +12,8 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
 public abstract class ShaderProgram {
+	protected static final String SHADER_ROOT_PATH = "src\\com\\chrisali\\openglworld\\"; 
+	
 	private int programID;
 	private int vertexShaderID;
 	private int fragmentStaderID;

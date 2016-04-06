@@ -22,6 +22,11 @@ public class MasterRenderer {
 	private static final float NEAR_PLANE = 0.1f;
 	private static final float FAR_PLANE = 1000;
 	
+	private static final float SKY_RED = 0.5f;
+	private static final float SKY_GREEN = 0.5f;
+	private static final float SKY_BLUE = 0.5f;
+	
+	
 	private StaticShader staticShader = new StaticShader();
 	private TerrainShader terrainShader = new TerrainShader();
 	
@@ -34,25 +39,34 @@ public class MasterRenderer {
 	private Matrix4f projectionMatrix;
 	
 	public MasterRenderer() {
-		GL11.glEnable(GL11.GL_CULL_FACE);
-		GL11.glCullFace(GL11.GL_BACK);
-		
+		enableCulling();
 		createProjectionMatrix();
 		
 		entityRenderer = new EntityRenderer(staticShader, projectionMatrix);
 		terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
+	}
+	
+	public static void enableCulling() {
+		GL11.glEnable(GL11.GL_CULL_FACE);
+		GL11.glCullFace(GL11.GL_BACK);
+	}
+	
+	public static void disableCulling() {
+		GL11.glDisable(GL11.GL_CULL_FACE);
 	}
 
 	public void render(Light sun, Camera camera) {
 		prepare();
 
 		staticShader.start();
+		staticShader.loadSkyColor(SKY_RED, SKY_GREEN, SKY_BLUE);
 		staticShader.loadLight(sun);
 		staticShader.loadViewMatrix(camera);
 		entityRenderer.render(entities);
 		staticShader.stop();
 		
 		terrainShader.start();
+		terrainShader.loadSkyColor(SKY_RED, SKY_GREEN, SKY_BLUE);
 		terrainShader.loadLight(sun);
 		terrainShader.loadViewMatrix(camera);
 		terrainRenderer.render(terrains);
@@ -65,7 +79,7 @@ public class MasterRenderer {
 	private void prepare() {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-		GL11.glClearColor(0.8f, 0.5f, 0, 1);
+		GL11.glClearColor(SKY_RED, SKY_GREEN, SKY_BLUE, 1);
 	}
 	
 	private void createProjectionMatrix() {
