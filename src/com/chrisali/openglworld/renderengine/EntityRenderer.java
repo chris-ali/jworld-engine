@@ -53,6 +53,7 @@ public class EntityRenderer {
 		ModelTexture texture = model.getTexture();
 		shader.loadFakeLightingVariable(texture.isUseFakeLighting());
 		shader.loadShineVariables(texture.getShineDamper(), texture.getReflectivity());
+		shader.loadNumberOfRows(texture.getNumberOfAtlasRows());
 		
 		if(texture.isHasTransparency())
 			MasterRenderer.disableCulling();
@@ -74,5 +75,6 @@ public class EntityRenderer {
 		Matrix4f transformationMatrix = Utilities.createTransformationMatrix(entity.getPosition(), entity.getRotX(), 
 				entity.getRotY(), entity.getRotZ(), entity.getScale());
 		shader.loadTransformationMatrix(transformationMatrix);
+		shader.loadOffset(entity.getTextureXOffset(), entity.getTextureYOffset());
 	}
 }

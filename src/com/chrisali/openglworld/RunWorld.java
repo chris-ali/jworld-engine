@@ -33,7 +33,7 @@ public class RunWorld {
 		
 		TexturedModel bunny =  new TexturedModel(OBJLoader.loadObjModel("bunny", "entities", loader), 
 			    								new ModelTexture(loader.loadTexture("bunny", "entities")));
-		Player player = new Player(bunny, new Vector3f(100, 0, -50), 0, 0, 0, 0.5f);
+		Player player = new Player(bunny, new Vector3f(100, 0, 500), 0, 0, 0, 0.5f);
 		
 		Camera camera = new Camera(player);
 		camera.setMouseSensitivity(0.2f);
@@ -48,11 +48,14 @@ public class RunWorld {
 		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
 		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap", "terrain"));
 		
-		List<Terrain> terrains = new ArrayList<>();
-//		terrains.add(new Terrain( 0,  0, "heightMap", "terrain", loader, texturePack, blendMap));
-		terrains.add(new Terrain( 0, -1, "heightMap", "terrain", loader, texturePack, blendMap));
-//		terrains.add(new Terrain(-1, -1, "heightMap", "terrain", loader, texturePack, blendMap));
-//		terrains.add(new Terrain(-1,  0, "heightMap", "terrain", loader, texturePack, blendMap));
+		int numTerrains = 2;
+		Terrain[][] terrainArray = new Terrain[2][2];
+		
+		for (int i = 0; i < numTerrains; i++) {
+			for (int j = 0; j < numTerrains; j++) {
+				terrainArray[i][j] = new Terrain(i, j, "heightMap", "terrain", loader, texturePack, blendMap);
+			}
+		}
 		
 		//================================= Entities ==========================================================
 		
@@ -72,6 +75,7 @@ public class RunWorld {
 		flower.getTexture().setHasTransparency(true);
 		flower.getTexture().setUseFakeLighting(true);
 		fern.getTexture().setHasTransparency(true);
+		fern.getTexture().setNumberOfAtlasRows(2);
 		
 		List<Entity> entities = new ArrayList<>();
 		Random random = new Random();
@@ -81,35 +85,35 @@ public class RunWorld {
 //			if (i % 7 == 0) {
 //				x = (random.nextFloat() * 800) - 400;
 //				z = random.nextFloat() * -600;
-//				y = terrains.get(0).getTerrainHeight(x, z);
+//				y = Terrain.getCurrentTerrain(terrainArray, x, z).getTerrainHeight(x, z);
 //				
 //				entities.add(new Entity(flower, new Vector3f(x, y, z), 0, random.nextFloat()*360, 0, random.nextFloat()*1 + 2));
 //				
 //				x = (random.nextFloat() * 800) - 400;
 //				z = random.nextFloat() * -600;
-//				y = terrains.get(0).getTerrainHeight(x, z);
+//				y = Terrain.getCurrentTerrain(terrainArray, x, z).getTerrainHeight(x, z);
 //				
 //				entities.add(new Entity(grass, new Vector3f(x, y, z), 0, random.nextFloat()*360, 0, random.nextFloat()* 1 + 1));
 //			}
 			
 			if (i % 3 == 0) {
 				x = (random.nextFloat() * 800) - 400;
-				z = random.nextFloat() * -600;
-				y = terrains.get(0).getTerrainHeight(x, z);
+				z = random.nextFloat() *  600;
+				y = Terrain.getCurrentTerrain(terrainArray, x, z).getTerrainHeight(x, z);
 				
 				entities.add(new Entity(tree1, new Vector3f(x, y, z), 0, random.nextFloat()*360, 0, random.nextFloat()* 1 + 5));
 				
 				x = (random.nextFloat() * 800) - 400;
-				z = random.nextFloat() * -600;
-				y = terrains.get(0).getTerrainHeight(x, z);
+				z = random.nextFloat() *  600;
+				y = Terrain.getCurrentTerrain(terrainArray, x, z).getTerrainHeight(x, z);
 				
 				entities.add(new Entity(tree2, new Vector3f(x, y, z), 0, random.nextFloat()*360, 0, random.nextFloat()* 0.1f + 0.6f));
 				
 				x = (random.nextFloat() * 800) - 400;
-				z = random.nextFloat() * -600;
-				y = terrains.get(0).getTerrainHeight(x, z);
+				z = random.nextFloat() *  600;
+				y = Terrain.getCurrentTerrain(terrainArray, x, z).getTerrainHeight(x, z);
 				
-				entities.add(new Entity(fern, new Vector3f(x, y, z), 0, random.nextFloat()*360, 0, random.nextFloat()*1 + 0.5f));
+				entities.add(new Entity(fern, random.nextInt(4), new Vector3f(x, y, z), 0, random.nextFloat()*360, 0, random.nextFloat()*1 + 0.5f));
 			}
 		}
 		
@@ -117,17 +121,23 @@ public class RunWorld {
 		
 		while (!Display.isCloseRequested()) {
 			camera.move();
-			player.move(null, terrains.get(0));
+			player.move(terrainArray);
 			
-			System.out.printf("%.1f, %.1f, %.1f, %.1f\n", player.getPosition().x, player.getPosition().z, terrains.get(0).getX(), terrains.get(0).getZ());
+			System.out.printf("%.1f, %.1f, %.1f, %.1f\n", player.getPosition().x, 
+														  player.getPosition().z,
+														  Terrain.getCurrentTerrain(terrainArray, player.getPosition().x, player.getPosition().z).getX(), 
+														  Terrain.getCurrentTerrain(terrainArray, player.getPosition().x, player.getPosition().z).getZ());
 			
 			renderer.processEntity(player);
 			
 			for(Entity entity : entities)
 				renderer.processEntity(entity);
 			
-			for(Terrain terrain : terrains)
-				renderer.processTerrain(terrain);
+			for (int i = 0; i < numTerrains; i++) {
+				for (int j = 0; j < numTerrains; j++) {
+					renderer.processTerrain(terrainArray[i][j]);
+				}
+			}
 			
 			renderer.render(light, camera);
 			DisplayManager.updateDisplay();

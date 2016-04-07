@@ -9,8 +9,14 @@ public class ModelTexture {
 	private boolean hasTransparency = false;
 	private boolean useFakeLighting = false;
 	
+	private int numberOfAtlasRows = 1;
+	
 	public ModelTexture(int id) {
 		this.textureID = id;
+	}
+
+	public int getNumberOfAtlasRows() {
+		return numberOfAtlasRows;
 	}
 
 	public int getTextureID() {
@@ -27,6 +33,10 @@ public class ModelTexture {
 	
 	public boolean isUseFakeLighting() {
 		return useFakeLighting;
+	}
+	
+	public void setNumberOfAtlasRows(int numberOfAtlasRows) {
+		this.numberOfAtlasRows = numberOfAtlasRows;
 	}
 
 	public void setShineDamper(float shineDamper) {

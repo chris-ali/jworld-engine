@@ -24,7 +24,7 @@ public class Player extends Entity {
 		super(model, position, rotX, rotY, rotZ, scale);
 	}
 	
-	public void move(Terrain[][] terrainArray, Terrain terrain) {
+	public void move(Terrain[][] terrainArray) {
 		checkInputs();
 		
 		super.increaseRotation(0, currentTurnSpeed * DisplayManager.getFrameTimeSeconds(), 0);
@@ -37,7 +37,7 @@ public class Player extends Entity {
 		currentVerticalSpeed += GRAVITY * DisplayManager.getFrameTimeSeconds();
 		super.increasePosition(0, currentVerticalSpeed * DisplayManager.getFrameTimeSeconds(), 0);
 		
-		//Terrain terrain = Terrain.getCurrentTerrain(terrainArray, super.getPosition().x, super.getPosition().z);
+		Terrain terrain = Terrain.getCurrentTerrain(terrainArray, super.getPosition().x, super.getPosition().z);
 		float terrainHeight = terrain.getTerrainHeight(super.getPosition().x, super.getPosition().z);
 		
 		if (super.getPosition().y < terrainHeight) {
