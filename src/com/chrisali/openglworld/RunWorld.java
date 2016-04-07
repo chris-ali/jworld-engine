@@ -135,8 +135,8 @@ public class RunWorld {
 			
 //			System.out.printf("%.1f, %.1f, %.1f, %.1f\n", player.getPosition().x, 
 //														  player.getPosition().z,
-//														  Terrain.getCurrentTerrain(terrainArray, player.getPosition().x, player.getPosition().z).getX(), 
-//														  Terrain.getCurrentTerrain(terrainArray, player.getPosition().x, player.getPosition().z).getZ());
+//														  Terrain.getCurrentTerrain(terrainArray, player.getPosition().x, player.getPosition().z).getX() - player.getPosition().x, 
+//														  Terrain.getCurrentTerrain(terrainArray, player.getPosition().x, player.getPosition().z).getZ() - player.getPosition().z);
 			
 			masterRenderer.processEntity(player);
 			

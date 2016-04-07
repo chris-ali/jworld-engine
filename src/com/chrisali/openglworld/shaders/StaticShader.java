@@ -24,6 +24,8 @@ public class StaticShader extends ShaderProgram {
 	private int location_skyColor;
 	private int location_numberOfRows;
 	private int location_offset;
+	private int location_density;
+	private int location_gradient;
 	
 	public StaticShader() {
 		super(VERTEX_FILE, FRAGMENT_FILE);
@@ -49,6 +51,13 @@ public class StaticShader extends ShaderProgram {
 		location_skyColor = super.getUniformLocation("skyColor");
 		location_numberOfRows = super.getUniformLocation("numberOfRows");
 		location_offset = super.getUniformLocation("offset");
+		location_density = super.getUniformLocation("density");
+		location_gradient = super.getUniformLocation("gradient");
+	}
+	
+	public void loadFog(float density, float gradient) {
+		super.loadFloat(location_density, density);
+		super.loadFloat(location_gradient, gradient);
 	}
 	
 	public void loadNumberOfRows(int numberOfRows) {
