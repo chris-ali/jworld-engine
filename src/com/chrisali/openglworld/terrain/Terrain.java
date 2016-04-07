@@ -6,12 +6,14 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.chrisali.openglworld.models.RawModel;
 import com.chrisali.openglworld.renderengine.Loader;
 import com.chrisali.openglworld.textures.TerrainTexture;
 import com.chrisali.openglworld.textures.TerrainTexturePack;
+import com.chrisali.openglworld.toolbox.Utilities;
 
 public class Terrain {
 	private static final float SIZE = 800;
@@ -22,6 +24,8 @@ public class Terrain {
 	private RawModel model;
 	private TerrainTexturePack texturePack;
 	private TerrainTexture blendMap;
+	
+	private float[][] heightArray;
 	
 	public Terrain(int gridX, int gridZ, String fileName, String directory, 
 					Loader loader, TerrainTexturePack texturePack, TerrainTexture blendMap) {
@@ -36,23 +40,26 @@ public class Terrain {
 		
 		BufferedImage image = null;
 		
-		try {
-			image = ImageIO.read(new File("res\\" + directory + "\\" + fileName + ".png"));
-		} catch (IOException e) {
-			System.err.println("Could not load height map: " + fileName + ".png");
-		}
+		try {image = ImageIO.read(new File("res\\" + directory + "\\" + fileName + ".png"));} 
+		catch (IOException e) {System.err.println("Could not load height map: " + fileName + ".png");}
 		
 		int VERTEX_COUNT = image.getHeight();
-		
 		int count = VERTEX_COUNT * VERTEX_COUNT;
+		
+		heightArray = new float[VERTEX_COUNT][VERTEX_COUNT];
 		float[] vertices = new float[count * 3];
 		float[] normals = new float[count * 3];
 		float[] textureCoords = new float[count*2];
 		int[] indices = new int[6*(VERTEX_COUNT-1)*(VERTEX_COUNT-1)];
+		
 		int vertexPointer = 0;
 		for(int i=0;i<VERTEX_COUNT;i++){
 			for(int j=0;j<VERTEX_COUNT;j++){
 				vertices[vertexPointer*3] = (float)j/((float)VERTEX_COUNT - 1) * SIZE;
+				
+				float height = getHeightFromImage(j, i, image);
+				heightArray[j][i] = height;
+				
 				vertices[vertexPointer*3+1] = getHeightFromImage(j, i, image);
 				vertices[vertexPointer*3+2] = (float)i/((float)VERTEX_COUNT - 1) * SIZE;
 				
@@ -111,7 +118,40 @@ public class Terrain {
 		return height;
 	}
 	
+	public float getTerrainHeight(float worldX, float worldZ) {
+		float terrainX = worldX - this.x;
+		float terrainZ = worldZ - this.z;
+		
+		float gridSquareSize = SIZE / ((float)heightArray.length - 1);
+		
+		int gridX = (int) Math.floor(terrainX/gridSquareSize);
+		int gridZ = (int) Math.floor(terrainZ/gridSquareSize);
+		
+		if (gridX >= (heightArray.length - 1) || gridZ >= (heightArray.length - 1) || gridX < 0 || gridZ < 0)
+			return 0;
+		
+		float xCoord = (terrainX % gridSquareSize) / gridSquareSize;
+		float zCoord = (terrainZ % gridSquareSize) / gridSquareSize;
+		
+		float terrainHeight;
+		if (xCoord <= (1-zCoord)) {
+			terrainHeight = Utilities.barryCentric(new Vector3f(0, heightArray[gridX][gridZ], 0), 
+												   new Vector3f(1, heightArray[gridX + 1][gridZ], 0), 
+												   new Vector3f(0, heightArray[gridX][gridZ + 1], 1), 
+												   new Vector2f(xCoord, zCoord));
+		} else {
+			terrainHeight = Utilities.barryCentric(new Vector3f(1, heightArray[gridX + 1][gridZ], 0), 
+												   new Vector3f(1, heightArray[gridX + 1][gridZ + 1], 1), 
+												   new Vector3f(0, heightArray[gridX][gridZ + 1], 1), 
+												   new Vector2f(xCoord, zCoord));
+		}
+		
+		return terrainHeight;			
+	}
 	
+	public static Terrain getCurrentTerrain(Terrain[][] terrainArray, float worldX, float worldZ) {
+		return terrainArray[(int)(worldX/Terrain.SIZE)][(int)(worldZ/Terrain.SIZE)];
+	}
 	
 	public float getX() {
 		return x;

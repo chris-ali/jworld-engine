@@ -5,6 +5,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 import com.chrisali.openglworld.models.TexturedModel;
 import com.chrisali.openglworld.renderengine.DisplayManager;
+import com.chrisali.openglworld.terrain.Terrain;
 
 public class Player extends Entity {
 	
@@ -12,8 +13,6 @@ public class Player extends Entity {
 	private static final float TURN_SPEED = 160;
 	private static final float GRAVITY = -50;
 	private static final float JUMP_POWER = 30;
-	
-	private static final float TERRAIN_HEIGHT = 0;
 	
 	private float currentSpeed = 0;
 	private float currentVerticalSpeed = 0;
@@ -25,7 +24,7 @@ public class Player extends Entity {
 		super(model, position, rotX, rotY, rotZ, scale);
 	}
 	
-	public void move() {
+	public void move(Terrain[][] terrainArray, Terrain terrain) {
 		checkInputs();
 		
 		super.increaseRotation(0, currentTurnSpeed * DisplayManager.getFrameTimeSeconds(), 0);
@@ -38,10 +37,13 @@ public class Player extends Entity {
 		currentVerticalSpeed += GRAVITY * DisplayManager.getFrameTimeSeconds();
 		super.increasePosition(0, currentVerticalSpeed * DisplayManager.getFrameTimeSeconds(), 0);
 		
-		if (super.getPosition().y < TERRAIN_HEIGHT) {
+		//Terrain terrain = Terrain.getCurrentTerrain(terrainArray, super.getPosition().x, super.getPosition().z);
+		float terrainHeight = terrain.getTerrainHeight(super.getPosition().x, super.getPosition().z);
+		
+		if (super.getPosition().y < terrainHeight) {
 			currentVerticalSpeed = 0;
 			isAirborne = false;
-			super.getPosition().y = TERRAIN_HEIGHT;
+			super.getPosition().y = terrainHeight;
 		}
 		
 	}
