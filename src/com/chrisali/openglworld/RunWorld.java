@@ -5,12 +5,15 @@ import java.util.List;
 import java.util.Random;
 
 import org.lwjgl.opengl.Display;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.chrisali.openglworld.entities.Camera;
 import com.chrisali.openglworld.entities.Entity;
 import com.chrisali.openglworld.entities.Light;
 import com.chrisali.openglworld.entities.Player;
+import com.chrisali.openglworld.interfaces.InterfaceRenderer;
+import com.chrisali.openglworld.interfaces.InterfaceTexture;
 import com.chrisali.openglworld.models.TexturedModel;
 import com.chrisali.openglworld.renderengine.DisplayManager;
 import com.chrisali.openglworld.renderengine.Loader;
@@ -26,7 +29,8 @@ public class RunWorld {
 	public static void main(String[] args) {
 		DisplayManager.createDisplay();
 		Loader loader = new Loader();
-		MasterRenderer renderer = new MasterRenderer();
+		MasterRenderer masterRenderer = new MasterRenderer();
+		InterfaceRenderer interfaceRenderer = new InterfaceRenderer(loader);
 		Light light = new Light(new Vector3f(20000, 40000, 20000), new Vector3f(1, 1, 1));
 		
 		//================================== Player ===========================================================
@@ -59,21 +63,21 @@ public class RunWorld {
 		
 		//================================= Entities ==========================================================
 		
-		TexturedModel tree1 =  new TexturedModel(OBJLoader.loadObjModel("tree", "entities", loader), 
-											    new ModelTexture(loader.loadTexture("tree", "entities")));
+		TexturedModel tree1 =  new TexturedModel(OBJLoader.loadObjModel("pine", "entities", loader), 
+											    new ModelTexture(loader.loadTexture("pine", "entities")));
 		TexturedModel tree2 =  new TexturedModel(OBJLoader.loadObjModel("lowPolyTree", "entities", loader), 
 			    								new ModelTexture(loader.loadTexture("lowPolyTree", "entities")));
-		TexturedModel grass = new TexturedModel(OBJLoader.loadObjModel("grassModel", "entities", loader), 
-		  										new ModelTexture(loader.loadTexture("grassTexture", "entities")));
-		TexturedModel flower = new TexturedModel(OBJLoader.loadObjModel("grassModel", "entities", loader), 
-												new ModelTexture(loader.loadTexture("flower", "entities")));
+//		TexturedModel grass = new TexturedModel(OBJLoader.loadObjModel("grassModel", "entities", loader), 
+//		  										new ModelTexture(loader.loadTexture("grassTexture", "entities")));
+//		TexturedModel flower = new TexturedModel(OBJLoader.loadObjModel("grassModel", "entities", loader), 
+//												new ModelTexture(loader.loadTexture("flower", "entities")));
 		TexturedModel fern =  new TexturedModel(OBJLoader.loadObjModel("fern", "entities", loader), 
 				  								new ModelTexture(loader.loadTexture("fern", "entities")));
 		
-		grass.getTexture().setHasTransparency(true);
-		grass.getTexture().setUseFakeLighting(true);
-		flower.getTexture().setHasTransparency(true);
-		flower.getTexture().setUseFakeLighting(true);
+//		grass.getTexture().setHasTransparency(true);
+//		grass.getTexture().setUseFakeLighting(true);
+//		flower.getTexture().setHasTransparency(true);
+//		flower.getTexture().setUseFakeLighting(true);
 		fern.getTexture().setHasTransparency(true);
 		fern.getTexture().setNumberOfAtlasRows(2);
 		
@@ -101,7 +105,7 @@ public class RunWorld {
 				z = random.nextFloat() *  600;
 				y = Terrain.getCurrentTerrain(terrainArray, x, z).getTerrainHeight(x, z);
 				
-				entities.add(new Entity(tree1, new Vector3f(x, y, z), 0, random.nextFloat()*360, 0, random.nextFloat()* 1 + 5));
+				entities.add(new Entity(tree1, new Vector3f(x, y, z), 0, random.nextFloat()*360, 0, random.nextFloat()* 1 + 1));
 				
 				x = (random.nextFloat() * 800) - 400;
 				z = random.nextFloat() *  600;
@@ -117,35 +121,46 @@ public class RunWorld {
 			}
 		}
 		
+		//=============================== Interface ==========================================================
+		
+		List<InterfaceTexture> interfaceTextures = new ArrayList<>();
+		InterfaceTexture interfaceTexture = new InterfaceTexture(loader.loadTexture("tree", "entities"), new Vector2f(0.25f, 0.25f), new Vector2f(0.025f, 0.025f));
+		interfaceTextures.add(interfaceTexture);
+		
 		//=============================== Main Loop ==========================================================
 		
 		while (!Display.isCloseRequested()) {
 			camera.move();
 			player.move(terrainArray);
 			
-			System.out.printf("%.1f, %.1f, %.1f, %.1f\n", player.getPosition().x, 
-														  player.getPosition().z,
-														  Terrain.getCurrentTerrain(terrainArray, player.getPosition().x, player.getPosition().z).getX(), 
-														  Terrain.getCurrentTerrain(terrainArray, player.getPosition().x, player.getPosition().z).getZ());
+//			System.out.printf("%.1f, %.1f, %.1f, %.1f\n", player.getPosition().x, 
+//														  player.getPosition().z,
+//														  Terrain.getCurrentTerrain(terrainArray, player.getPosition().x, player.getPosition().z).getX(), 
+//														  Terrain.getCurrentTerrain(terrainArray, player.getPosition().x, player.getPosition().z).getZ());
 			
-			renderer.processEntity(player);
+			masterRenderer.processEntity(player);
 			
 			for(Entity entity : entities)
-				renderer.processEntity(entity);
+				masterRenderer.processEntity(entity);
+			
+			for(Entity entity : entities)
+				masterRenderer.processEntity(entity);
 			
 			for (int i = 0; i < numTerrains; i++) {
 				for (int j = 0; j < numTerrains; j++) {
-					renderer.processTerrain(terrainArray[i][j]);
+					masterRenderer.processTerrain(terrainArray[i][j]);
 				}
 			}
 			
-			renderer.render(light, camera);
+			masterRenderer.render(light, camera);
+			interfaceRenderer.render(interfaceTextures);
 			DisplayManager.updateDisplay();
 		}
 		
 		//================================ Clean Up ==========================================================
 
-		renderer.cleanUp();
+		masterRenderer.cleanUp();
+		interfaceRenderer.cleanUp();
 		loader.cleanUp();
 		
 		DisplayManager.closeDisplay();
