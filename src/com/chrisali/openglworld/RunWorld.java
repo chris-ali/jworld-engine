@@ -31,13 +31,18 @@ public class RunWorld {
 		Loader loader = new Loader();
 		MasterRenderer masterRenderer = new MasterRenderer();
 		InterfaceRenderer interfaceRenderer = new InterfaceRenderer(loader);
-		Light light = new Light(new Vector3f(20000, 40000, 20000), new Vector3f(1, 1, 1));
+		
+		//==================================== Sun ============================================================
+		
+		List<Light> lights = new ArrayList<>();
+		lights.add(new Light(new Vector3f(20000, 40000, 20000), new Vector3f(0.002f, 0.002f, 0.002f)));
+
 		
 		//================================== Player ===========================================================
 		
 		TexturedModel bunny =  new TexturedModel(OBJLoader.loadObjModel("bunny", "entities", loader), 
 			    								new ModelTexture(loader.loadTexture("bunny", "entities")));
-		Player player = new Player(bunny, new Vector3f(100, 0, 500), 0, 0, 0, 0.5f);
+		Player player = new Player(bunny, new Vector3f(200, 0, 100), 0, 0, 0, 0.5f);
 		
 		Camera camera = new Camera(player);
 		camera.setMouseSensitivity(0.2f);
@@ -73,6 +78,8 @@ public class RunWorld {
 //												new ModelTexture(loader.loadTexture("flower", "entities")));
 		TexturedModel fern =  new TexturedModel(OBJLoader.loadObjModel("fern", "entities", loader), 
 				  								new ModelTexture(loader.loadTexture("fern", "entities")));
+		TexturedModel lamp =  new TexturedModel(OBJLoader.loadObjModel("lamp", "entities", loader), 
+												new ModelTexture(loader.loadTexture("lamp", "entities")));
 		
 //		grass.getTexture().setHasTransparency(true);
 //		grass.getTexture().setUseFakeLighting(true);
@@ -121,11 +128,23 @@ public class RunWorld {
 			}
 		}
 		
+		//============================= Lit Entities =========================================================
+		
+		entities.add(new Entity(lamp, new Vector3f(185, -4.7f, 293), 0, 0, 0, 1));
+		lights.add(new Light(new Vector3f(185, 10, 293), new Vector3f(2, 0, 2), new Vector3f(1, 0.01f, 0.002f)));
+		
+		entities.add(new Entity(lamp, new Vector3f(370, -7.0f, 300), 0, 0, 0, 1));
+		lights.add(new Light(new Vector3f(370, 0, 300), new Vector3f(2, 0, 0), new Vector3f(1, 0.01f, 0.002f)));
+		
+		entities.add(new Entity(lamp, new Vector3f(293, 6.8f, 305), 0, 0, 0, 1));
+		lights.add(new Light(new Vector3f(293, 10, 305), new Vector3f(2, 2, 0), new Vector3f(1, 0.01f, 0.002f)));
+		
+		lights.add(new Light(new Vector3f(player.getPosition().x, player.getPosition().y+10, player.getPosition().z), new Vector3f(2, 2, 0), new Vector3f(1, 0.01f, 0.002f)));
+		
 		//=============================== Interface ==========================================================
 		
 		List<InterfaceTexture> interfaceTextures = new ArrayList<>();
-		InterfaceTexture interfaceTexture = new InterfaceTexture(loader.loadTexture("tree", "entities"), new Vector2f(0.25f, 0.25f), new Vector2f(0.025f, 0.025f));
-		interfaceTextures.add(interfaceTexture);
+		interfaceTextures.add(new InterfaceTexture(loader.loadTexture("tree", "entities"), new Vector2f(0.25f, 0.25f), new Vector2f(0.025f, 0.025f)));
 		
 		//=============================== Main Loop ==========================================================
 		
@@ -133,10 +152,11 @@ public class RunWorld {
 			camera.move();
 			player.move(terrainArray);
 			
-//			System.out.printf("%.1f, %.1f, %.1f, %.1f\n", player.getPosition().x, 
-//														  player.getPosition().z,
-//														  Terrain.getCurrentTerrain(terrainArray, player.getPosition().x, player.getPosition().z).getX() - player.getPosition().x, 
-//														  Terrain.getCurrentTerrain(terrainArray, player.getPosition().x, player.getPosition().z).getZ() - player.getPosition().z);
+//			System.out.printf("%.1f, %.1f, %.1f, %.1f, %.1f\n", player.getPosition().x,
+//															    player.getPosition().y,
+//															    player.getPosition().z,
+//															    Terrain.getCurrentTerrain(terrainArray, player.getPosition().x, player.getPosition().z).getX() - player.getPosition().x, 
+//															    Terrain.getCurrentTerrain(terrainArray, player.getPosition().x, player.getPosition().z).getZ() - player.getPosition().z);
 			
 			masterRenderer.processEntity(player);
 			
@@ -152,7 +172,7 @@ public class RunWorld {
 				}
 			}
 			
-			masterRenderer.render(light, camera);
+			masterRenderer.render(lights, camera);
 			interfaceRenderer.render(interfaceTextures);
 			DisplayManager.updateDisplay();
 		}

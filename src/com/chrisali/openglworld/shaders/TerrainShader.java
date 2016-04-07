@@ -1,5 +1,7 @@
 package com.chrisali.openglworld.shaders;
 
+import java.util.List;
+
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -8,14 +10,18 @@ import com.chrisali.openglworld.entities.Light;
 import com.chrisali.openglworld.toolbox.Utilities;
 
 public class TerrainShader extends ShaderProgram {
+	
+	private static final int MAX_LIGHTS = 8;
+	
 	private static final String VERTEX_FILE = SHADER_ROOT_PATH + "shaders\\terrainVertexShader.txt";
 	private static final String FRAGMENT_FILE = SHADER_ROOT_PATH + "shaders\\terrainFragmentShader.txt";
 
 	private int location_transformationMatrix;
 	private int location_projectionMatrix;
 	private int location_viewMatrix;
-	private int location_lightPosition;
-	private int location_lightColor;
+	private int location_lightPosition[];
+	private int location_lightColor[];
+	private int location_lightAttenuation[];
 	private int location_shineDamper;
 	private int location_reflectivity;
 	private int location_skyColor;
@@ -43,8 +49,6 @@ public class TerrainShader extends ShaderProgram {
 		location_transformationMatrix = super.getUniformLocation("transformationMatrix");
 		location_projectionMatrix = super.getUniformLocation("projectionMatrix");
 		location_viewMatrix = super.getUniformLocation("viewMatrix");
-		location_lightPosition = super.getUniformLocation("lightPosition");
-		location_lightColor = super.getUniformLocation("lightColor");
 		location_shineDamper = super.getUniformLocation("shineDamper");
 		location_reflectivity = super.getUniformLocation("reflectivity");
 		location_skyColor = super.getUniformLocation("skyColor");
@@ -55,6 +59,16 @@ public class TerrainShader extends ShaderProgram {
 		location_blendMap = super.getUniformLocation("blendMap");
 		location_density = super.getUniformLocation("density");
 		location_gradient = super.getUniformLocation("gradient");
+		
+		location_lightPosition = new int[MAX_LIGHTS];
+		location_lightColor = new int[MAX_LIGHTS];
+		location_lightAttenuation = new int[MAX_LIGHTS];
+		
+		for (int i = 0; i < MAX_LIGHTS; i++) {
+			location_lightPosition[i] = super.getUniformLocation("lightPosition[" + i + "]");
+			location_lightColor[i] = super.getUniformLocation("lightColor[" + i + "]");
+			location_lightAttenuation[i] = super.getUniformLocation("lightAttenuation[" + i + "]");
+		}
 	}
 	
 	public void connectTextureUnits() {
@@ -83,9 +97,19 @@ public class TerrainShader extends ShaderProgram {
 		super.loadMatrix(location_transformationMatrix, matrix);
 	}
 
-	public void loadLight(Light light) {
-		super.loadVector(location_lightPosition, light.getPosition());
-		super.loadVector(location_lightColor, light.getColor());
+	public void loadLights(List<Light> lights) {
+		for(int i = 0; i < MAX_LIGHTS; i++) {
+			if (i < lights.size()) {
+				super.loadVector(location_lightPosition[i], lights.get(i).getPosition());
+				super.loadVector(location_lightColor[i], lights.get(i).getColor());
+				super.loadVector(location_lightAttenuation[i], lights.get(i).getAttenuation());
+			} else {
+				super.loadVector(location_lightPosition[i], new Vector3f(0, 0, 0));
+				super.loadVector(location_lightColor[i], new Vector3f(0, 0, 0));
+				super.loadVector(location_lightAttenuation[i], new Vector3f(1, 0, 0));
+			}
+		}
+		
 	}
 
 	public void loadProjectionMatrix(Matrix4f projection) {
