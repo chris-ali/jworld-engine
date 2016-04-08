@@ -1,4 +1,4 @@
-package com.chrisali.openglworld.interfaces;
+package com.chrisali.openglworld.renderengine;
 
 import java.util.List;
 
@@ -8,8 +8,8 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 
+import com.chrisali.openglworld.interfaces.ui.InterfaceTexture;
 import com.chrisali.openglworld.models.RawModel;
-import com.chrisali.openglworld.renderengine.Loader;
 import com.chrisali.openglworld.shaders.InterfaceShader;
 import com.chrisali.openglworld.toolbox.Utilities;
 

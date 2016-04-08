@@ -1,8 +1,8 @@
 package com.chrisali.openglworld;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
@@ -10,12 +10,16 @@ import org.lwjgl.util.vector.Vector3f;
 
 import com.chrisali.openglworld.entities.Camera;
 import com.chrisali.openglworld.entities.Entity;
+import com.chrisali.openglworld.entities.EntityCollections;
 import com.chrisali.openglworld.entities.Light;
 import com.chrisali.openglworld.entities.Player;
-import com.chrisali.openglworld.interfaces.InterfaceRenderer;
-import com.chrisali.openglworld.interfaces.InterfaceTexture;
+import com.chrisali.openglworld.interfaces.font.FontType;
+import com.chrisali.openglworld.interfaces.font.GUIText;
+import com.chrisali.openglworld.interfaces.font.TextMaster;
+import com.chrisali.openglworld.interfaces.ui.InterfaceTexture;
 import com.chrisali.openglworld.models.TexturedModel;
 import com.chrisali.openglworld.renderengine.DisplayManager;
+import com.chrisali.openglworld.renderengine.InterfaceRenderer;
 import com.chrisali.openglworld.renderengine.Loader;
 import com.chrisali.openglworld.renderengine.MasterRenderer;
 import com.chrisali.openglworld.renderengine.OBJLoader;
@@ -32,20 +36,15 @@ public class RunWorld {
 		MasterRenderer masterRenderer = new MasterRenderer();
 		InterfaceRenderer interfaceRenderer = new InterfaceRenderer(loader);
 		
+		
+		TextMaster.init(loader);
+		FontType font = new FontType(loader.loadTexture("arial", "fonts"), new File("res\\fonts\\arial.fnt"));
+		GUIText text = new GUIText("Test Text", 1, font, new Vector2f(0, 0), 1f, true);
+		
 		//==================================== Sun ============================================================
 		
 		List<Light> lights = new ArrayList<>();
-		lights.add(new Light(new Vector3f(20000, 40000, 20000), new Vector3f(0.002f, 0.002f, 0.002f)));
-
-		
-		//================================== Player ===========================================================
-		
-		TexturedModel bunny =  new TexturedModel(OBJLoader.loadObjModel("bunny", "entities", loader), 
-			    								new ModelTexture(loader.loadTexture("bunny", "entities")));
-		Player player = new Player(bunny, new Vector3f(200, 0, 100), 0, 0, 0, 0.5f);
-		
-		Camera camera = new Camera(player);
-		camera.setMouseSensitivity(0.2f);
+		lights.add(new Light(new Vector3f(20000, 40000, 20000), new Vector3f(0.2f, 0.2f, 0.2f)));
 		
 		//================================= Terrain ==========================================================
 		
@@ -57,94 +56,39 @@ public class RunWorld {
 		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
 		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap", "terrain"));
 		
-		int numTerrains = 2;
-		Terrain[][] terrainArray = new Terrain[2][2];
+		int numTerrains = 4;
+		Terrain[][] terrainArray = new Terrain[numTerrains/2][numTerrains/2];
 		
-		for (int i = 0; i < numTerrains; i++) {
-			for (int j = 0; j < numTerrains; j++) {
+		for (int i = 0; i < terrainArray.length; i++) {
+			for (int j = 0; j < terrainArray.length; j++) {
 				terrainArray[i][j] = new Terrain(i, j, "heightMap", "terrain", loader, texturePack, blendMap);
 			}
 		}
 		
 		//================================= Entities ==========================================================
 		
-		TexturedModel tree1 =  new TexturedModel(OBJLoader.loadObjModel("pine", "entities", loader), 
-											    new ModelTexture(loader.loadTexture("pine", "entities")));
-		TexturedModel tree2 =  new TexturedModel(OBJLoader.loadObjModel("lowPolyTree", "entities", loader), 
-			    								new ModelTexture(loader.loadTexture("lowPolyTree", "entities")));
-//		TexturedModel grass = new TexturedModel(OBJLoader.loadObjModel("grassModel", "entities", loader), 
-//		  										new ModelTexture(loader.loadTexture("grassTexture", "entities")));
-//		TexturedModel flower = new TexturedModel(OBJLoader.loadObjModel("grassModel", "entities", loader), 
-//												new ModelTexture(loader.loadTexture("flower", "entities")));
-		TexturedModel fern =  new TexturedModel(OBJLoader.loadObjModel("fern", "entities", loader), 
-				  								new ModelTexture(loader.loadTexture("fern", "entities")));
-		TexturedModel lamp =  new TexturedModel(OBJLoader.loadObjModel("lamp", "entities", loader), 
-												new ModelTexture(loader.loadTexture("lamp", "entities")));
-		
-//		grass.getTexture().setHasTransparency(true);
-//		grass.getTexture().setUseFakeLighting(true);
-//		flower.getTexture().setHasTransparency(true);
-//		flower.getTexture().setUseFakeLighting(true);
-		fern.getTexture().setHasTransparency(true);
-		fern.getTexture().setNumberOfAtlasRows(2);
-		
-		List<Entity> entities = new ArrayList<>();
-		Random random = new Random();
-		for (int i=0; i<400; i++) {
-			float x, y, z;
-			
-//			if (i % 7 == 0) {
-//				x = (random.nextFloat() * 800) - 400;
-//				z = random.nextFloat() * -600;
-//				y = Terrain.getCurrentTerrain(terrainArray, x, z).getTerrainHeight(x, z);
-//				
-//				entities.add(new Entity(flower, new Vector3f(x, y, z), 0, random.nextFloat()*360, 0, random.nextFloat()*1 + 2));
-//				
-//				x = (random.nextFloat() * 800) - 400;
-//				z = random.nextFloat() * -600;
-//				y = Terrain.getCurrentTerrain(terrainArray, x, z).getTerrainHeight(x, z);
-//				
-//				entities.add(new Entity(grass, new Vector3f(x, y, z), 0, random.nextFloat()*360, 0, random.nextFloat()* 1 + 1));
-//			}
-			
-			if (i % 3 == 0) {
-				x = (random.nextFloat() * 800) - 400;
-				z = random.nextFloat() *  600;
-				y = Terrain.getCurrentTerrain(terrainArray, x, z).getTerrainHeight(x, z);
-				
-				entities.add(new Entity(tree1, new Vector3f(x, y, z), 0, random.nextFloat()*360, 0, random.nextFloat()* 1 + 1));
-				
-				x = (random.nextFloat() * 800) - 400;
-				z = random.nextFloat() *  600;
-				y = Terrain.getCurrentTerrain(terrainArray, x, z).getTerrainHeight(x, z);
-				
-				entities.add(new Entity(tree2, new Vector3f(x, y, z), 0, random.nextFloat()*360, 0, random.nextFloat()* 0.1f + 0.6f));
-				
-				x = (random.nextFloat() * 800) - 400;
-				z = random.nextFloat() *  600;
-				y = Terrain.getCurrentTerrain(terrainArray, x, z).getTerrainHeight(x, z);
-				
-				entities.add(new Entity(fern, random.nextInt(4), new Vector3f(x, y, z), 0, random.nextFloat()*360, 0, random.nextFloat()*1 + 0.5f));
-			}
-		}
+		EntityCollections entities = new EntityCollections(lights, terrainArray, loader);
+		entities.createRandomStaticEntities();
 		
 		//============================= Lit Entities =========================================================
 		
-		entities.add(new Entity(lamp, new Vector3f(185, -4.7f, 293), 0, 0, 0, 1));
-		lights.add(new Light(new Vector3f(185, 10, 293), new Vector3f(2, 0, 2), new Vector3f(1, 0.01f, 0.002f)));
+		entities.createRandomLitEntities();
 		
-		entities.add(new Entity(lamp, new Vector3f(370, -7.0f, 300), 0, 0, 0, 1));
-		lights.add(new Light(new Vector3f(370, 0, 300), new Vector3f(2, 0, 0), new Vector3f(1, 0.01f, 0.002f)));
+		//================================== Player ===========================================================
 		
-		entities.add(new Entity(lamp, new Vector3f(293, 6.8f, 305), 0, 0, 0, 1));
-		lights.add(new Light(new Vector3f(293, 10, 305), new Vector3f(2, 2, 0), new Vector3f(1, 0.01f, 0.002f)));
+		TexturedModel bunny =  new TexturedModel(OBJLoader.loadObjModel("bunny", "entities", loader), 
+			    								new ModelTexture(loader.loadTexture("bunny", "entities")));
+		Player player = new Player(bunny, new Vector3f(200, 0, 100), 0, 0, 0, 0.5f);
 		
-		lights.add(new Light(new Vector3f(player.getPosition().x, player.getPosition().y+10, player.getPosition().z), new Vector3f(2, 2, 0), new Vector3f(1, 0.01f, 0.002f)));
+		entities.addToStaticEntities(player);
+		
+		Camera camera = new Camera(player);
+		camera.setMouseSensitivity(0.2f);
 		
 		//=============================== Interface ==========================================================
 		
 		List<InterfaceTexture> interfaceTextures = new ArrayList<>();
-		interfaceTextures.add(new InterfaceTexture(loader.loadTexture("tree", "entities"), new Vector2f(0.25f, 0.25f), new Vector2f(0.025f, 0.025f)));
+		interfaceTextures.add(new InterfaceTexture(loader.loadTexture("tree", "entities"), new Vector2f(0.25f, 0.25f), new Vector2f(0.0f, 0.0f)));
 		
 		//=============================== Main Loop ==========================================================
 		
@@ -158,27 +102,15 @@ public class RunWorld {
 //															    Terrain.getCurrentTerrain(terrainArray, player.getPosition().x, player.getPosition().z).getX() - player.getPosition().x, 
 //															    Terrain.getCurrentTerrain(terrainArray, player.getPosition().x, player.getPosition().z).getZ() - player.getPosition().z);
 			
-			masterRenderer.processEntity(player);
-			
-			for(Entity entity : entities)
-				masterRenderer.processEntity(entity);
-			
-			for(Entity entity : entities)
-				masterRenderer.processEntity(entity);
-			
-			for (int i = 0; i < numTerrains; i++) {
-				for (int j = 0; j < numTerrains; j++) {
-					masterRenderer.processTerrain(terrainArray[i][j]);
-				}
-			}
-			
-			masterRenderer.render(lights, camera);
+			masterRenderer.renderWholeScene(entities, terrainArray, lights, camera);
+
 			interfaceRenderer.render(interfaceTextures);
+			TextMaster.render();
 			DisplayManager.updateDisplay();
 		}
 		
 		//================================ Clean Up ==========================================================
-
+		TextMaster.cleanUp();
 		masterRenderer.cleanUp();
 		interfaceRenderer.cleanUp();
 		loader.cleanUp();

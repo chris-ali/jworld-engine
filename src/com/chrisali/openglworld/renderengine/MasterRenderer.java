@@ -11,6 +11,7 @@ import org.lwjgl.util.vector.Matrix4f;
 
 import com.chrisali.openglworld.entities.Camera;
 import com.chrisali.openglworld.entities.Entity;
+import com.chrisali.openglworld.entities.EntityCollections;
 import com.chrisali.openglworld.entities.Light;
 import com.chrisali.openglworld.models.TexturedModel;
 import com.chrisali.openglworld.shaders.StaticShader;
@@ -55,6 +56,22 @@ public class MasterRenderer {
 	
 	public static void disableCulling() {
 		GL11.glDisable(GL11.GL_CULL_FACE);
+	}
+	
+	public void renderWholeScene(EntityCollections entities, Terrain[][] terrainArray, List<Light> lights, Camera camera) {
+		for(Entity entity : entities.getStaticEntities())
+			processEntity(entity);
+		
+		for(Entity entity : entities.getLitEntities())
+			processEntity(entity);
+		
+		for (int i = 0; i < terrainArray.length; i++) {
+			for (int j = 0; j < terrainArray.length; j++) {
+				processTerrain(terrainArray[i][j]);
+			}
+		}
+		
+		render(lights, camera);
 	}
 
 	public void render(List<Light> lights, Camera camera) {

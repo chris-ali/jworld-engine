@@ -1,4 +1,4 @@
-package com.chrisali.openglworld.interfaces;
+package com.chrisali.openglworld.interfaces.ui;
 
 import org.lwjgl.util.vector.Vector2f;
 
