@@ -74,7 +74,7 @@ public class MasterRenderer {
 		render(lights, camera);
 	}
 
-	public void render(List<Light> lights, Camera camera) {
+	private void render(List<Light> lights, Camera camera) {
 		prepare();
 
 		staticShader.start();
@@ -118,7 +118,7 @@ public class MasterRenderer {
         projectionMatrix.m33 = 0;
 	}
 
-	public void processEntity(Entity entity) {
+	private void processEntity(Entity entity) {
 		TexturedModel entityModel = entity.getModel();
 		List<Entity> batch = entities.get(entityModel);
 		
@@ -131,8 +131,12 @@ public class MasterRenderer {
 		}
 	}
 	
-	public void processTerrain(Terrain terrain) {
+	private void processTerrain(Terrain terrain) {
 		terrains.add(terrain);
+	}
+
+	public Matrix4f getProjectionMatrix() {
+		return projectionMatrix;
 	}
 
 	public void cleanUp() {

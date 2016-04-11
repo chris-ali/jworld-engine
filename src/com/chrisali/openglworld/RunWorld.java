@@ -4,12 +4,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.chrisali.openglworld.entities.Camera;
-import com.chrisali.openglworld.entities.Entity;
 import com.chrisali.openglworld.entities.EntityCollections;
 import com.chrisali.openglworld.entities.Light;
 import com.chrisali.openglworld.entities.Player;
@@ -18,6 +18,8 @@ import com.chrisali.openglworld.interfaces.font.GUIText;
 import com.chrisali.openglworld.interfaces.font.TextMaster;
 import com.chrisali.openglworld.interfaces.ui.InterfaceTexture;
 import com.chrisali.openglworld.models.TexturedModel;
+import com.chrisali.openglworld.particles.Particle;
+import com.chrisali.openglworld.particles.ParticleMaster;
 import com.chrisali.openglworld.renderengine.DisplayManager;
 import com.chrisali.openglworld.renderengine.InterfaceRenderer;
 import com.chrisali.openglworld.renderengine.Loader;
@@ -34,17 +36,17 @@ public class RunWorld {
 		DisplayManager.createDisplay();
 		Loader loader = new Loader();
 		MasterRenderer masterRenderer = new MasterRenderer();
+		ParticleMaster.init(loader, masterRenderer.getProjectionMatrix());
 		InterfaceRenderer interfaceRenderer = new InterfaceRenderer(loader);
-		
 		
 		TextMaster.init(loader);
 		FontType font = new FontType(loader.loadTexture("arial", "fonts"), new File("res\\fonts\\arial.fnt"));
-		GUIText text = new GUIText("Test Text", 1, font, new Vector2f(0, 0), 1f, true);
+		new GUIText("Test Text", 1, font, new Vector2f(0, 0), 1f, true);
 		
 		//==================================== Sun ============================================================
 		
 		List<Light> lights = new ArrayList<>();
-		lights.add(new Light(new Vector3f(20000, 40000, 20000), new Vector3f(0.2f, 0.2f, 0.2f)));
+		lights.add(new Light(new Vector3f(20000, 40000, 20000), new Vector3f(0.8f, 0.8f, 0.8f)));
 		
 		//================================= Terrain ==========================================================
 		
@@ -72,7 +74,7 @@ public class RunWorld {
 		
 		//============================= Lit Entities =========================================================
 		
-		entities.createRandomLitEntities();
+		//entities.createRandomLitEntities();
 		
 		//================================== Player ===========================================================
 		
@@ -96,6 +98,12 @@ public class RunWorld {
 			camera.move();
 			player.move(terrainArray);
 			
+			if(Keyboard.isKeyDown(Keyboard.KEY_Y)) {
+				new Particle(new Vector3f(player.getPosition()), new Vector3f(0, 30, 0), 1, 4, 0, 1);
+			}
+			
+			ParticleMaster.update();
+			
 //			System.out.printf("%.1f, %.1f, %.1f, %.1f, %.1f\n", player.getPosition().x,
 //															    player.getPosition().y,
 //															    player.getPosition().z,
@@ -103,13 +111,15 @@ public class RunWorld {
 //															    Terrain.getCurrentTerrain(terrainArray, player.getPosition().x, player.getPosition().z).getZ() - player.getPosition().z);
 			
 			masterRenderer.renderWholeScene(entities, terrainArray, lights, camera);
-
+			
+			ParticleMaster.renderParticles(camera);
 			interfaceRenderer.render(interfaceTextures);
 			TextMaster.render();
 			DisplayManager.updateDisplay();
 		}
 		
 		//================================ Clean Up ==========================================================
+		ParticleMaster.cleanUp();
 		TextMaster.cleanUp();
 		masterRenderer.cleanUp();
 		interfaceRenderer.cleanUp();
