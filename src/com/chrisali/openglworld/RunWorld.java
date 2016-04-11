@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
@@ -18,8 +17,9 @@ import com.chrisali.openglworld.interfaces.font.GUIText;
 import com.chrisali.openglworld.interfaces.font.TextMaster;
 import com.chrisali.openglworld.interfaces.ui.InterfaceTexture;
 import com.chrisali.openglworld.models.TexturedModel;
-import com.chrisali.openglworld.particles.Particle;
 import com.chrisali.openglworld.particles.ParticleMaster;
+import com.chrisali.openglworld.particles.ParticleSystem;
+import com.chrisali.openglworld.particles.ParticleTexture;
 import com.chrisali.openglworld.renderengine.DisplayManager;
 import com.chrisali.openglworld.renderengine.InterfaceRenderer;
 import com.chrisali.openglworld.renderengine.Loader;
@@ -66,6 +66,16 @@ public class RunWorld {
 				terrainArray[i][j] = new Terrain(i, j, "heightMap", "terrain", loader, texturePack, blendMap);
 			}
 		}
+
+		//=============================== Particles ==========================================================
+		
+		ParticleTexture fire = new ParticleTexture(loader.loadTexture("fire", "particles"), 4, true);
+		
+		ParticleSystem fireSystem = new ParticleSystem(fire, 300, 8, 0.1f, 1, 8.6f);
+		fireSystem.setLifeError(0.1f);
+		fireSystem.setSpeedError(0.25f);
+		fireSystem.setScaleError(0.5f);
+		fireSystem.randomizeRotation();
 		
 		//================================= Entities ==========================================================
 		
@@ -98,11 +108,9 @@ public class RunWorld {
 			camera.move();
 			player.move(terrainArray);
 			
-			if(Keyboard.isKeyDown(Keyboard.KEY_Y)) {
-				new Particle(new Vector3f(player.getPosition()), new Vector3f(0, 30, 0), 1, 4, 0, 1);
-			}
+			fireSystem.generateParticles(new Vector3f(player.getPosition()));
 			
-			ParticleMaster.update();
+			ParticleMaster.update(camera);
 			
 //			System.out.printf("%.1f, %.1f, %.1f, %.1f, %.1f\n", player.getPosition().x,
 //															    player.getPosition().y,

@@ -48,7 +48,7 @@ public class EntityCollections {
 		fern.getTexture().setNumberOfAtlasRows(2);
 		
 		Random random = new Random();
-		for (int i=0; i<400; i++) {
+		for (int i=0; i<1200; i++) {
 			float x, y, z;
 			
 			if (i % 7 == 0) {
