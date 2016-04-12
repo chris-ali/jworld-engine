@@ -8,6 +8,7 @@ import java.util.Map;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector3f;
 
 import com.chrisali.openglworld.entities.Camera;
 import com.chrisali.openglworld.entities.Entity;
@@ -19,16 +20,16 @@ import com.chrisali.openglworld.shaders.TerrainShader;
 import com.chrisali.openglworld.terrain.Terrain;
 
 public class MasterRenderer {
-	private static final float FOV = 70;
-	private static final float NEAR_PLANE = 0.1f;
-	private static final float FAR_PLANE = 1000;
+	private static float fov = 70;
+	private static float nearPlane = 0.1f;
+	private static float farPlane = 1000;
 	
-	private static final float SKY_RED = 0.5f;
-	private static final float SKY_GREEN = 0.5f;
-	private static final float SKY_BLUE = 0.5f;
+	private static float skyRed = 0.5f;
+	private static float skyGreen = 0.5f;
+	private static float skyBlue = 0.5f;
 	
-	private static final float FOG_DENSITY = 0.002f;
-	private static final float FOG_GRADIENT = 1.5f;
+	private static float fogDensity = 0.002f;
+	private static float fogGradient = 1.5f;
 	
 	private StaticShader staticShader = new StaticShader();
 	private TerrainShader terrainShader = new TerrainShader();
@@ -78,16 +79,16 @@ public class MasterRenderer {
 		prepare();
 
 		staticShader.start();
-		staticShader.loadSkyColor(SKY_RED, SKY_GREEN, SKY_BLUE);
-		staticShader.loadFog(FOG_DENSITY, FOG_GRADIENT);
+		staticShader.loadSkyColor(skyRed, skyGreen, skyBlue);
+		staticShader.loadFog(fogDensity, fogGradient);
 		staticShader.loadLights(lights);
 		staticShader.loadViewMatrix(camera);
 		entityRenderer.render(entities);
 		staticShader.stop();
 		
 		terrainShader.start();
-		terrainShader.loadSkyColor(SKY_RED, SKY_GREEN, SKY_BLUE);
-		terrainShader.loadFog(FOG_DENSITY, FOG_GRADIENT);
+		terrainShader.loadSkyColor(skyRed, skyGreen, skyBlue);
+		terrainShader.loadFog(fogDensity, fogGradient);
 		terrainShader.loadLights(lights);
 		terrainShader.loadViewMatrix(camera);
 		terrainRenderer.render(terrains);
@@ -100,21 +101,21 @@ public class MasterRenderer {
 	private void prepare() {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-		GL11.glClearColor(SKY_RED, SKY_GREEN, SKY_BLUE, 1);
+		GL11.glClearColor(skyRed, skyGreen, skyBlue, 1);
 	}
 	
 	private void createProjectionMatrix() {
 		float aspectRatio = (float) Display.getWidth() / (float) Display.getHeight();
-        float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV/2f))) * aspectRatio);
+        float y_scale = (float) ((1f / Math.tan(Math.toRadians(fov/2f))) * aspectRatio);
         float x_scale = y_scale / aspectRatio;
-        float frustum_length = FAR_PLANE - NEAR_PLANE;
+        float frustum_length = farPlane - nearPlane;
         
         projectionMatrix = new Matrix4f();
         projectionMatrix.m00 = x_scale;
         projectionMatrix.m11 = y_scale;
-        projectionMatrix.m22 = -((FAR_PLANE + NEAR_PLANE) / frustum_length);
+        projectionMatrix.m22 = -((farPlane + nearPlane) / frustum_length);
         projectionMatrix.m23 = -1;
-        projectionMatrix.m32 = -((2 * NEAR_PLANE * FAR_PLANE) / frustum_length);
+        projectionMatrix.m32 = -((2 * nearPlane * farPlane) / frustum_length);
         projectionMatrix.m33 = 0;
 	}
 
@@ -142,5 +143,23 @@ public class MasterRenderer {
 	public void cleanUp() {
 		staticShader.cleanUp();
 		terrainShader.cleanUp();
+	}
+
+	public static Vector3f getSkyColor() {
+		return new Vector3f(skyRed, skyGreen, skyBlue);
+	}
+	
+	public static void setSkyColor(Vector3f skyColor) {
+		skyRed = skyColor.x; 
+		skyGreen = skyColor.y;
+		skyBlue = skyColor.z;
+	}
+
+	public static float getFogDensity() {
+		return fogDensity;
+	}
+	
+	public static void setFogDensity(float fogDens) {
+		fogDensity = fogDens;
 	}
 }

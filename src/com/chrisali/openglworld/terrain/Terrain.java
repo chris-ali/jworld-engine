@@ -172,4 +172,12 @@ public class Terrain {
 	public TerrainTexture getBlendMap() {
 		return blendMap;
 	}
+
+	public static float getSize() {
+		return SIZE;
+	}
+
+	public static float getMaxHeight() {
+		return MAX_HEIGHT;
+	}
 }

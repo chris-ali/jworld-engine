@@ -181,5 +181,14 @@ public class GUIText {
 	protected String getTextString() {
 		return textString;
 	}
+	
+	/**
+	 * Sets the text displayed
+	 * 
+	 * @param text
+	 */
+	public void setTextString(String text) {
+		this.textString = text;
+	}
 
 }

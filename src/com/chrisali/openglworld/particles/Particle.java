@@ -54,7 +54,7 @@ public class Particle {
 		return elapsedTime < lifeLength;
 	}
 	
-	private void updateTextureCoordinateInfo() {
+	protected void updateTextureCoordinateInfo() {
 		float lifeFactor = elapsedTime / lifeLength;
 		int stageCount = texture.getNumberOfAtlasRows() * texture.getNumberOfAtlasRows();
 		float atlasProgression = lifeFactor * stageCount;
@@ -68,7 +68,7 @@ public class Particle {
 		setTextureOffset(textureOffset2, index2);
 	}
 	
-	private void setTextureOffset(Vector2f offset, int index) {
+	protected void setTextureOffset(Vector2f offset, int index) {
 		int column = index % texture.getNumberOfAtlasRows();
 		int row = index / texture.getNumberOfAtlasRows();
 		offset.x = (float)column / texture.getNumberOfAtlasRows();
