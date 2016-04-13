@@ -56,6 +56,12 @@ public class ParticleRenderer {
 	public void render(Map<ParticleTexture, List<Particle>> particles, Camera camera) {
 		Matrix4f viewMatrix = Utilities.createViewMatrix(camera);
 		prepare();
+		
+		shader.loadSkyColor(MasterRenderer.getSkyColor().x, 
+							MasterRenderer.getSkyColor().y, 
+							MasterRenderer.getSkyColor().z);
+		shader.loadFog(MasterRenderer.getFogDensity(), 
+			   		   MasterRenderer.getFogGradient());
 
 		for (ParticleTexture texture : particles.keySet()) {
 			bindTexture(texture);

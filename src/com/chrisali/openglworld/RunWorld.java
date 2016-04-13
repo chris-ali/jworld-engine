@@ -16,7 +16,6 @@ import com.chrisali.openglworld.interfaces.font.TextMaster;
 import com.chrisali.openglworld.interfaces.ui.InterfaceTexture;
 import com.chrisali.openglworld.models.TexturedModel;
 import com.chrisali.openglworld.particles.Cloud;
-import com.chrisali.openglworld.particles.Particle;
 import com.chrisali.openglworld.particles.ParticleMaster;
 import com.chrisali.openglworld.particles.ParticleSystem;
 import com.chrisali.openglworld.particles.ParticleTexture;
@@ -34,6 +33,10 @@ public class RunWorld {
 		DisplayManager.createDisplay();
 		Loader loader = new Loader();
 		MasterRenderer masterRenderer = new MasterRenderer();
+		MasterRenderer.setSkyColor(new Vector3f(0.0f, 0.7f, 0.9f));
+		MasterRenderer.setFogDensity(0.002f);
+		MasterRenderer.setFogGradient(1.5f);
+		
 		ParticleMaster.init(loader, masterRenderer.getProjectionMatrix());
 		InterfaceRenderer interfaceRenderer = new InterfaceRenderer(loader);
 		TextMaster.init(loader);
@@ -52,18 +55,19 @@ public class RunWorld {
 
 		//=============================== Particles ==========================================================
 		
-		ParticleTexture fire = new ParticleTexture(loader.loadTexture("fire", "particles"), 4, true);
-		ParticleTexture clouds = new ParticleTexture(loader.loadTexture("clouds", "particles"), 4, true);
+//		ParticleTexture fire = new ParticleTexture(loader.loadTexture("fire", "particles"), 4, true);
+//		
+//		ParticleSystem fireSystem = new ParticleSystem(fire, 300, 8, 0.1f, 1, 8.6f);
+//		fireSystem.setLifeError(0.1f);
+//		fireSystem.setSpeedError(0.25f);
+//		fireSystem.setScaleError(0.5f);
+//		fireSystem.randomizeRotation();
 		
-		ParticleSystem fireSystem = new ParticleSystem(fire, 300, 8, 0.1f, 1, 8.6f);
-		fireSystem.setLifeError(0.1f);
-		fireSystem.setSpeedError(0.25f);
-		fireSystem.setScaleError(0.5f);
-		fireSystem.randomizeRotation();
+		ParticleTexture clouds = new ParticleTexture(loader.loadTexture("clouds", "particles"), 4, true);
 		
 		Random random = new Random();
 		for (int i = 0; i < 1000; i++) {
-			new Cloud(clouds, new Vector3f(random.nextInt(800*4), 300, i*4), new Vector3f(0, 0, 0), 0, 120);
+			new Cloud(clouds, new Vector3f(random.nextInt(800*5), 100, i*5), new Vector3f(0, 0, 0), 0, 100);
 		}
 		
 		
@@ -80,7 +84,7 @@ public class RunWorld {
 		
 		TexturedModel bunny =  new TexturedModel(OBJLoader.loadObjModel("bunny", "entities", loader), 
 			    								new ModelTexture(loader.loadTexture("bunny", "entities")));
-		Player player = new Player(bunny, new Vector3f(200, 0, 100), 0, 0, 0, 0.5f);
+		Player player = new Player(bunny, new Vector3f(800, 0, 800), 0, 0, 0, 0.5f);
 		
 		entities.addToStaticEntities(player);
 		
@@ -98,7 +102,7 @@ public class RunWorld {
 			camera.move();
 			player.move(terrainCollection.getTerrainArray());
 			
-			fireSystem.generateParticles(new Vector3f(player.getPosition()));
+//			fireSystem.generateParticles(new Vector3f(player.getPosition()));
 			
 			ParticleMaster.update(camera);
 			

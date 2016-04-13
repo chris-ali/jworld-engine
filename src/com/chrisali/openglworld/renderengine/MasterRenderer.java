@@ -162,4 +162,16 @@ public class MasterRenderer {
 	public static void setFogDensity(float fogDens) {
 		fogDensity = fogDens;
 	}
+
+	public static float getFogGradient() {
+		return fogGradient;
+	}
+	
+	public static void setFogGradient(float fogGrad) {
+		fogGradient = fogGrad;
+	}
+
+	public static float getFov() {
+		return fov;
+	}
 }

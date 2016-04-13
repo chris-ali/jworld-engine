@@ -48,19 +48,19 @@ public class EntityCollections {
 		fern.getTexture().setNumberOfAtlasRows(2);
 		
 		Random random = new Random();
-		for (int i=0; i<1200; i++) {
+		for (int i=0; i<2400; i++) {
 			float x, y, z;
 			
 			if (i % 7 == 0) {
-				x = (random.nextFloat() * 800) - 400;
-				z = random.nextFloat() * -600;
+				x = random.nextFloat() * Terrain.getSize()*terrainArray.length;
+				z = random.nextFloat() * Terrain.getSize()*terrainArray.length;
 				y = Terrain.getCurrentTerrain(terrainArray, x, z).getTerrainHeight(x, z);
 				
 				staticEntities.add(new Entity(flower, new Vector3f(x, y, z), 
 									0, random.nextFloat()*360, 0, random.nextFloat()*1 + 2));
 				
-				x = (random.nextFloat() * 800) - 400;
-				z = random.nextFloat() * -600;
+				x = random.nextFloat() * Terrain.getSize()*terrainArray.length;
+				z = random.nextFloat() * Terrain.getSize()*terrainArray.length;
 				y = Terrain.getCurrentTerrain(terrainArray, x, z).getTerrainHeight(x, z);
 				
 				staticEntities.add(new Entity(grass, new Vector3f(x, y, z), 
@@ -68,22 +68,22 @@ public class EntityCollections {
 			}
 			
 			if (i % 3 == 0) {
-				x = (random.nextFloat() * 800) - 400;
-				z = random.nextFloat() *  600;
+				x = random.nextFloat() * Terrain.getSize()*terrainArray.length;
+				z = random.nextFloat() * Terrain.getSize()*terrainArray.length;
 				y = Terrain.getCurrentTerrain(terrainArray, x, z).getTerrainHeight(x, z);
 				
 				staticEntities.add(new Entity(tree1, new Vector3f(x, y, z), 
 									0, random.nextFloat()*360, 0, random.nextFloat()* 1 + 1));
 				
-				x = (random.nextFloat() * 800) - 400;
-				z = random.nextFloat() *  600;
+				x = random.nextFloat() * Terrain.getSize()*terrainArray.length;
+				z = random.nextFloat() * Terrain.getSize()*terrainArray.length;
 				y = Terrain.getCurrentTerrain(terrainArray, x, z).getTerrainHeight(x, z);
 				
 				staticEntities.add(new Entity(tree2, new Vector3f(x, y, z), 
 									0, random.nextFloat()*360, 0, random.nextFloat()* 0.1f + 0.6f));
 				
-				x = (random.nextFloat() * 800) - 400;
-				z = random.nextFloat() *  600;
+				x = random.nextFloat() * Terrain.getSize()*terrainArray.length;
+				z = random.nextFloat() * Terrain.getSize()*terrainArray.length;
 				y = Terrain.getCurrentTerrain(terrainArray, x, z).getTerrainHeight(x, z);
 				
 				staticEntities.add(new Entity(fern, random.nextInt(4), new Vector3f(x, y, z), 
