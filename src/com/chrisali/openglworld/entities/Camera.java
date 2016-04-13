@@ -62,19 +62,6 @@ public class Camera {
 	}
 	
 	public void move() {
-//		if(Keyboard.isKeyDown(Keyboard.KEY_W))
-//			position.z -= cameraSpeed;
-//		if(Keyboard.isKeyDown(Keyboard.KEY_S))
-//			position.z += cameraSpeed;
-//		if(Keyboard.isKeyDown(Keyboard.KEY_A))
-//			position.x -= cameraSpeed;
-//		if(Keyboard.isKeyDown(Keyboard.KEY_D))
-//			position.x += cameraSpeed;
-//		if(Keyboard.isKeyDown(Keyboard.KEY_R))
-//			position.y += cameraPanSpeed;
-//		if(Keyboard.isKeyDown(Keyboard.KEY_F))
-//			position.y -= cameraPanSpeed;
-		
 		calculateCameraZoomToPlayer();
 		calculateCameraPitchToPlayer();
 		calculateCameraYawToPlayer();

@@ -22,7 +22,7 @@ import com.chrisali.openglworld.terrain.Terrain;
 public class MasterRenderer {
 	private static float fov = 70;
 	private static float nearPlane = 0.1f;
-	private static float farPlane = 1000;
+	private static float farPlane = 2000;
 	
 	private static float skyRed = 0.5f;
 	private static float skyGreen = 0.5f;

@@ -17,7 +17,6 @@ import com.chrisali.openglworld.interfaces.ui.InterfaceTexture;
 import com.chrisali.openglworld.models.TexturedModel;
 import com.chrisali.openglworld.particles.Cloud;
 import com.chrisali.openglworld.particles.ParticleMaster;
-import com.chrisali.openglworld.particles.ParticleSystem;
 import com.chrisali.openglworld.particles.ParticleTexture;
 import com.chrisali.openglworld.renderengine.DisplayManager;
 import com.chrisali.openglworld.renderengine.InterfaceRenderer;
@@ -29,11 +28,13 @@ import com.chrisali.openglworld.textures.ModelTexture;
 
 public class RunWorld {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) {runApp();}
+	
+	private static void runApp() {
 		DisplayManager.createDisplay();
 		Loader loader = new Loader();
 		MasterRenderer masterRenderer = new MasterRenderer();
-		MasterRenderer.setSkyColor(new Vector3f(0.0f, 0.7f, 0.9f));
+		MasterRenderer.setSkyColor(new Vector3f(0.0f, 0.75f, 0.95f));
 		MasterRenderer.setFogDensity(0.002f);
 		MasterRenderer.setFogGradient(1.5f);
 		
@@ -67,7 +68,7 @@ public class RunWorld {
 		
 		Random random = new Random();
 		for (int i = 0; i < 1000; i++) {
-			new Cloud(clouds, new Vector3f(random.nextInt(800*5), 100, i*5), new Vector3f(0, 0, 0), 0, 100);
+			new Cloud(clouds, new Vector3f(random.nextInt(800*5), 200, i*5), new Vector3f(0, 0, 0), 0, 100);
 		}
 		
 		
@@ -89,7 +90,6 @@ public class RunWorld {
 		entities.addToStaticEntities(player);
 		
 		Camera camera = new Camera(player);
-		camera.setMouseSensitivity(0.2f);
 		
 		//=============================== Interface ==========================================================
 		
