@@ -1,5 +1,6 @@
 package com.chrisali.openglworld;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -12,6 +13,8 @@ import com.chrisali.openglworld.entities.Camera;
 import com.chrisali.openglworld.entities.EntityCollections;
 import com.chrisali.openglworld.entities.Light;
 import com.chrisali.openglworld.entities.Player;
+import com.chrisali.openglworld.interfaces.font.FontType;
+import com.chrisali.openglworld.interfaces.font.GUIText;
 import com.chrisali.openglworld.interfaces.font.TextMaster;
 import com.chrisali.openglworld.interfaces.ui.InterfaceTexture;
 import com.chrisali.openglworld.models.TexturedModel;
@@ -28,10 +31,15 @@ import com.chrisali.openglworld.textures.ModelTexture;
 
 public class RunWorld {
 
-	public static void main(String[] args) {runApp();}
+	public static void main(String[] args) {new RunWorld();}
 	
-	private static void runApp() {
+	public RunWorld() {
+		//=================================== Set Up ==========================================================
+		
 		DisplayManager.createDisplay();
+		DisplayManager.setHeight(900);
+		DisplayManager.setWidth(1440);
+		
 		Loader loader = new Loader();
 		MasterRenderer masterRenderer = new MasterRenderer();
 		MasterRenderer.setSkyColor(new Vector3f(0.0f, 0.75f, 0.95f));
@@ -41,9 +49,6 @@ public class RunWorld {
 		ParticleMaster.init(loader, masterRenderer.getProjectionMatrix());
 		InterfaceRenderer interfaceRenderer = new InterfaceRenderer(loader);
 		TextMaster.init(loader);
-		
-//		FontType font = new FontType(loader.loadTexture("arial", "fonts"), new File("res\\fonts\\arial.fnt"));
-//		new GUIText("Test Text", 1, font, new Vector2f(0, 0), 1f, true);
 		
 		//==================================== Sun ============================================================
 		
@@ -67,10 +72,8 @@ public class RunWorld {
 		ParticleTexture clouds = new ParticleTexture(loader.loadTexture("clouds", "particles"), 4, true);
 		
 		Random random = new Random();
-		for (int i = 0; i < 1000; i++) {
+		for (int i = 0; i < 1000; i++)
 			new Cloud(clouds, new Vector3f(random.nextInt(800*5), 200, i*5), new Vector3f(0, 0, 0), 0, 100);
-		}
-		
 		
 		//================================= Entities ==========================================================
 		
@@ -96,6 +99,9 @@ public class RunWorld {
 		List<InterfaceTexture> interfaceTextures = new ArrayList<>();
 		interfaceTextures.add(new InterfaceTexture(loader.loadTexture("tree", "entities"), new Vector2f(0.25f, 0.25f), new Vector2f(0.0f, 0.0f)));
 		
+		FontType font = new FontType(loader.loadTexture("arial", "fonts"), new File("res\\fonts\\arial.fnt"));
+		GUIText text = new GUIText("Test Text", 1, font, new Vector2f(0, 0), 1f, true);
+		
 		//=============================== Main Loop ==========================================================
 		
 		while (!Display.isCloseRequested()) {
@@ -106,14 +112,10 @@ public class RunWorld {
 			
 			ParticleMaster.update(camera);
 			
-//			System.out.printf("%.1f, %.1f, %.1f, %.1f, %.1f\n", player.getPosition().x,
-//															    player.getPosition().y,
-//															    player.getPosition().z,
-//															    Terrain.getCurrentTerrain(terrainArray, player.getPosition().x, player.getPosition().z).getX() - player.getPosition().x, 
-//															    Terrain.getCurrentTerrain(terrainArray, player.getPosition().x, player.getPosition().z).getZ() - player.getPosition().z);
-			
+			text.setTextString(String.valueOf(player.getPosition().y));
+			TextMaster.loadText(text);
+
 			masterRenderer.renderWholeScene(entities, terrainCollection.getTerrainArray(), lights, camera);
-			
 			ParticleMaster.renderParticles(camera);
 			interfaceRenderer.render(interfaceTextures);
 			TextMaster.render();
@@ -121,6 +123,7 @@ public class RunWorld {
 		}
 		
 		//================================ Clean Up ==========================================================
+		
 		ParticleMaster.cleanUp();
 		TextMaster.cleanUp();
 		masterRenderer.cleanUp();

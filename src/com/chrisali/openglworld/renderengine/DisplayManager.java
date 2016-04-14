@@ -9,9 +9,10 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.PixelFormat;
 
 public class DisplayManager {
-	private static final int HEIGHT = 600;
-	private static final int WIDTH = 800;
 	private static final int FPS_CAP = 60;
+	
+	private static int height = 900;
+	private static int width = 1440;
 	
 	private static long lastFrameTime;
 	private static float delta;
@@ -22,14 +23,14 @@ public class DisplayManager {
 			.withForwardCompatible(true)
 			.withProfileCore(true);
 			
-			Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));
+			Display.setDisplayMode(new DisplayMode(width, height));
 			Display.setTitle("My Game");
 			Display.create(new PixelFormat(),attribs);
 		} catch (LWJGLException e) {
 			e.printStackTrace();
 		}
 		
-		GL11.glViewport(0, 0, WIDTH, HEIGHT);
+		GL11.glViewport(0, 0, width, height);
 		lastFrameTime = getCurrentTime();
 	}
 	
@@ -51,5 +52,13 @@ public class DisplayManager {
 	
 	private static long getCurrentTime() {
 		return Sys.getTime()*1000/Sys.getTimerResolution();
+	}
+
+	public static void setHeight(int height) {
+		DisplayManager.height = height;
+	}
+
+	public static void setWidth(int width) {
+		DisplayManager.width = width;
 	}
 }
