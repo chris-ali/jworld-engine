@@ -26,8 +26,11 @@ import com.chrisali.openglworld.renderengine.InterfaceRenderer;
 import com.chrisali.openglworld.renderengine.Loader;
 import com.chrisali.openglworld.renderengine.MasterRenderer;
 import com.chrisali.openglworld.renderengine.OBJLoader;
+import com.chrisali.openglworld.shaders.WaterShader;
 import com.chrisali.openglworld.terrain.TerrainCollection;
 import com.chrisali.openglworld.textures.ModelTexture;
+import com.chrisali.openglworld.water.WaterRenderer;
+import com.chrisali.openglworld.water.WaterTile;
 
 public class RunWorld {
 
@@ -50,6 +53,9 @@ public class RunWorld {
 		InterfaceRenderer interfaceRenderer = new InterfaceRenderer(loader);
 		TextMaster.init(loader);
 		
+		WaterShader waterShader = new WaterShader();
+		WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, masterRenderer.getProjectionMatrix());
+		
 		//==================================== Sun ============================================================
 		
 		List<Light> lights = new ArrayList<>();
@@ -58,6 +64,11 @@ public class RunWorld {
 		//================================= Terrain ==========================================================
 		
 		TerrainCollection terrainCollection = new TerrainCollection(4, loader);
+		
+		//================================== Water ===========================================================
+		
+		List<WaterTile> waterList = new ArrayList<>();
+		waterList.add(new WaterTile(800, 800, 0));
 
 		//=============================== Particles ==========================================================
 		
@@ -100,11 +111,12 @@ public class RunWorld {
 		interfaceTextures.add(new InterfaceTexture(loader.loadTexture("tree", "entities"), new Vector2f(0.25f, 0.25f), new Vector2f(0.0f, 0.0f)));
 		
 		FontType font = new FontType(loader.loadTexture("arial", "fonts"), new File("res\\fonts\\arial.fnt"));
-		GUIText text = new GUIText("Test Text", 1, font, new Vector2f(0, 0), 1f, true);
+		GUIText text = new GUIText("", 1, font, new Vector2f(0, 0), 1f, true);
 		
 		//=============================== Main Loop ==========================================================
 		
 		while (!Display.isCloseRequested()) {
+			//--------- Movement ----------------
 			camera.move();
 			player.move(terrainCollection.getTerrainArray());
 			
@@ -112,11 +124,14 @@ public class RunWorld {
 			
 			ParticleMaster.update(camera);
 			
+			//----------- UI --------------------
 			text.setTextString(String.valueOf(player.getPosition().y));
 			TextMaster.loadText(text);
 
+			//------ Render Everything -----------
 			masterRenderer.renderWholeScene(entities, terrainCollection.getTerrainArray(), lights, camera);
 			ParticleMaster.renderParticles(camera);
+			waterRenderer.render(waterList, camera);
 			interfaceRenderer.render(interfaceTextures);
 			TextMaster.render();
 			DisplayManager.updateDisplay();
