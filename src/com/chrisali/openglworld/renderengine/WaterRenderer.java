@@ -1,8 +1,9 @@
-package com.chrisali.openglworld.water;
+package com.chrisali.openglworld.renderengine;
 
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
@@ -10,21 +11,31 @@ import org.lwjgl.util.vector.Vector3f;
 
 import com.chrisali.openglworld.entities.Camera;
 import com.chrisali.openglworld.models.RawModel;
-import com.chrisali.openglworld.renderengine.Loader;
-import com.chrisali.openglworld.renderengine.MasterRenderer;
 import com.chrisali.openglworld.shaders.WaterShader;
 import com.chrisali.openglworld.toolbox.Utilities;
+import com.chrisali.openglworld.water.WaterFrameBuffers;
+import com.chrisali.openglworld.water.WaterTile;
 
 public class WaterRenderer {
+	
+	private static final String DUDV_MAP = "waterDUDV";
 
 	private static float fogDensity = MasterRenderer.getFogDensity();
 	private static float fogGradient = MasterRenderer.getFogGradient();
 	
+	private static float waveStrength = 0.02f;
+	private static float waveSpeed = 0.02f;
+	private static float waveFactor = 0;
+	
+	private int dudvTexture;
 	private RawModel quad;
 	private WaterShader shader;
+	private WaterFrameBuffers waterFrameBuffers;
 
-	public WaterRenderer(Loader loader, WaterShader shader, Matrix4f projectionMatrix) {
+	public WaterRenderer(Loader loader, WaterShader shader, Matrix4f projectionMatrix, WaterFrameBuffers waterFrameBuffers) {
 		this.shader = shader;
+		this.waterFrameBuffers = waterFrameBuffers;
+		dudvTexture = loader.loadTexture(DUDV_MAP, "water");
 		shader.start();
 		shader.loadProjectionMatrix(projectionMatrix);
 		shader.stop();
@@ -42,6 +53,7 @@ public class WaterRenderer {
 			shader.loadSkyColor(MasterRenderer.getSkyColor().x, 
 								MasterRenderer.getSkyColor().y, 
 								MasterRenderer.getSkyColor().z);
+			shader.connectTextures();
 			GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, quad.getVertexCount());
 		}
 		unbind();
@@ -50,8 +62,22 @@ public class WaterRenderer {
 	private void prepareRender(Camera camera){
 		shader.start();
 		shader.loadViewMatrix(camera);
+		
+		waveFactor += waveSpeed * DisplayManager.getFrameTimeSeconds();
+		waveFactor %= 1;
+		shader.loadWaves(waveStrength, waveFactor);
+		
 		GL30.glBindVertexArray(quad.getVaoID());
 		GL20.glEnableVertexAttribArray(0);
+		
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, waterFrameBuffers.getReflectionTexture());
+		
+		GL13.glActiveTexture(GL13.GL_TEXTURE1);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, waterFrameBuffers.getRefractionTexture());
+		
+		GL13.glActiveTexture(GL13.GL_TEXTURE2);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, dudvTexture);
 	}
 	
 	private void unbind(){
@@ -66,4 +92,11 @@ public class WaterRenderer {
 		quad = loader.loadToVAO(vertices, 2);
 	}
 
+	public static void setWaveStrength(float waveStrength) {
+		WaterRenderer.waveStrength = waveStrength;
+	}
+
+	public static void setWaveSpeed(float waveSpeed) {
+		WaterRenderer.waveSpeed = waveSpeed;
+	}
 }

@@ -17,6 +17,11 @@ public class WaterShader extends ShaderProgram {
 	private int location_density;
 	private int location_gradient;
 	private int location_skyColor;
+	private int location_reflectionTexture;
+	private int location_refractionTexture;
+	private int location_dudvMap;
+	private int location_waveStrength;
+	private int location_waveFactor;
 
 	public WaterShader() {
 		super(VERTEX_FILE, FRAGMENT_FILE);
@@ -35,6 +40,22 @@ public class WaterShader extends ShaderProgram {
 		location_density = super.getUniformLocation("density");
 		location_gradient = super.getUniformLocation("gradient");
 		location_skyColor = super.getUniformLocation("skyColor");
+		location_reflectionTexture = super.getUniformLocation("reflectionTexture");
+		location_refractionTexture = super.getUniformLocation("refractionTexture");
+		location_dudvMap = super.getUniformLocation("dudvMap");
+		location_waveStrength = super.getUniformLocation("waveStrength");
+		location_waveFactor = super.getUniformLocation("waveFactor");
+	}
+	
+	public void loadWaves(float waveStrength, float waveFactor) {
+		super.loadFloat(location_waveStrength, waveStrength);
+		super.loadFloat(location_waveFactor, waveFactor);
+	}
+	
+	public void connectTextures() {
+		super.loadInt(location_reflectionTexture, 0);
+		super.loadInt(location_refractionTexture, 1);
+		super.loadInt(location_dudvMap, 2);
 	}
 	
 	public void loadSkyColor(float r, float g, float b) {

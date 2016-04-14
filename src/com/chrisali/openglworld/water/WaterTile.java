@@ -24,7 +24,4 @@ public class WaterTile {
 	public float getZ() {
 		return z;
 	}
-
-
-
 }

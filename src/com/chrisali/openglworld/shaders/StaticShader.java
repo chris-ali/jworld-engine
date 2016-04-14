@@ -5,6 +5,7 @@ import java.util.List;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
 
 import com.chrisali.openglworld.entities.Camera;
 import com.chrisali.openglworld.entities.Light;
@@ -31,6 +32,7 @@ public class StaticShader extends ShaderProgram {
 	private int location_offset;
 	private int location_density;
 	private int location_gradient;
+	private int location_clippingPlane;
 	
 	public StaticShader() {
 		super(VERTEX_FILE, FRAGMENT_FILE);
@@ -56,6 +58,7 @@ public class StaticShader extends ShaderProgram {
 		location_offset = super.getUniformLocation("offset");
 		location_density = super.getUniformLocation("density");
 		location_gradient = super.getUniformLocation("gradient");
+		location_clippingPlane = super.getUniformLocation("clippingPlane");
 		
 		location_lightPosition = new int[MAX_LIGHTS];
 		location_lightColor = new int[MAX_LIGHTS];
@@ -66,6 +69,10 @@ public class StaticShader extends ShaderProgram {
 			location_lightColor[i] = super.getUniformLocation("lightColor[" + i + "]");
 			location_lightAttenuation[i] = super.getUniformLocation("lightAttenuation[" + i + "]");
 		}
+	}
+	
+	public void loadClippingPlane(Vector4f clippingPlane) {
+		super.loadVector(location_clippingPlane, clippingPlane);
 	}
 	
 	public void loadFog(float density, float gradient) {

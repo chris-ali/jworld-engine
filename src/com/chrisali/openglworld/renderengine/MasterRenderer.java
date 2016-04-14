@@ -9,6 +9,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
 
 import com.chrisali.openglworld.entities.Camera;
 import com.chrisali.openglworld.entities.Entity;
@@ -59,7 +60,7 @@ public class MasterRenderer {
 		GL11.glDisable(GL11.GL_CULL_FACE);
 	}
 	
-	public void renderWholeScene(EntityCollections entities, Terrain[][] terrainArray, List<Light> lights, Camera camera) {
+	public void renderWholeScene(EntityCollections entities, Terrain[][] terrainArray, List<Light> lights, Camera camera, Vector4f clippingPlane) {
 		for(Entity entity : entities.getStaticEntities())
 			processEntity(entity);
 		
@@ -72,13 +73,14 @@ public class MasterRenderer {
 			}
 		}
 		
-		render(lights, camera);
+		render(lights, camera, clippingPlane);
 	}
 
-	private void render(List<Light> lights, Camera camera) {
+	private void render(List<Light> lights, Camera camera, Vector4f clippingPlane) {
 		prepare();
 
 		staticShader.start();
+		staticShader.loadClippingPlane(clippingPlane);
 		staticShader.loadSkyColor(skyRed, skyGreen, skyBlue);
 		staticShader.loadFog(fogDensity, fogGradient);
 		staticShader.loadLights(lights);
@@ -87,6 +89,7 @@ public class MasterRenderer {
 		staticShader.stop();
 		
 		terrainShader.start();
+		terrainShader.loadClippingPlane(clippingPlane);
 		terrainShader.loadSkyColor(skyRed, skyGreen, skyBlue);
 		terrainShader.loadFog(fogDensity, fogGradient);
 		terrainShader.loadLights(lights);

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
 
 import com.chrisali.openglworld.entities.Camera;
 import com.chrisali.openglworld.entities.Light;
@@ -32,6 +33,7 @@ public class TerrainShader extends ShaderProgram {
 	private int location_blendMap;
 	private int location_density;
 	private int location_gradient;
+	private int location_clippingPlane;
 
 	public TerrainShader() {
 		super(VERTEX_FILE, FRAGMENT_FILE);
@@ -59,6 +61,7 @@ public class TerrainShader extends ShaderProgram {
 		location_blendMap = super.getUniformLocation("blendMap");
 		location_density = super.getUniformLocation("density");
 		location_gradient = super.getUniformLocation("gradient");
+		location_clippingPlane = super.getUniformLocation("clippingPlane");
 		
 		location_lightPosition = new int[MAX_LIGHTS];
 		location_lightColor = new int[MAX_LIGHTS];
@@ -77,6 +80,10 @@ public class TerrainShader extends ShaderProgram {
 		super.loadInt(location_gTexture, 2);
 		super.loadInt(location_bTexture, 3);
 		super.loadInt(location_blendMap, 4);
+	}
+	
+	public void loadClippingPlane(Vector4f clippingPlane) {
+		super.loadVector(location_clippingPlane, clippingPlane);
 	}
 	
 	public void loadFog(float density, float gradient) {

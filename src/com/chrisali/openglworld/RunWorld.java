@@ -6,8 +6,11 @@ import java.util.List;
 import java.util.Random;
 
 import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
 
 import com.chrisali.openglworld.entities.Camera;
 import com.chrisali.openglworld.entities.EntityCollections;
@@ -26,10 +29,11 @@ import com.chrisali.openglworld.renderengine.InterfaceRenderer;
 import com.chrisali.openglworld.renderengine.Loader;
 import com.chrisali.openglworld.renderengine.MasterRenderer;
 import com.chrisali.openglworld.renderengine.OBJLoader;
+import com.chrisali.openglworld.renderengine.WaterRenderer;
 import com.chrisali.openglworld.shaders.WaterShader;
 import com.chrisali.openglworld.terrain.TerrainCollection;
 import com.chrisali.openglworld.textures.ModelTexture;
-import com.chrisali.openglworld.water.WaterRenderer;
+import com.chrisali.openglworld.water.WaterFrameBuffers;
 import com.chrisali.openglworld.water.WaterTile;
 
 public class RunWorld {
@@ -53,9 +57,6 @@ public class RunWorld {
 		InterfaceRenderer interfaceRenderer = new InterfaceRenderer(loader);
 		TextMaster.init(loader);
 		
-		WaterShader waterShader = new WaterShader();
-		WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, masterRenderer.getProjectionMatrix());
-		
 		//==================================== Sun ============================================================
 		
 		List<Light> lights = new ArrayList<>();
@@ -67,8 +68,12 @@ public class RunWorld {
 		
 		//================================== Water ===========================================================
 		
-		List<WaterTile> waterList = new ArrayList<>();
-		waterList.add(new WaterTile(800, 800, 0));
+//		WaterFrameBuffers waterFrameBuffers = new WaterFrameBuffers();
+//		WaterShader waterShader = new WaterShader();
+//		WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, masterRenderer.getProjectionMatrix(), waterFrameBuffers);
+//		
+//		List<WaterTile> waterList = new ArrayList<>();
+//		waterList.add(new WaterTile(800, 800, 0));
 
 		//=============================== Particles ==========================================================
 		
@@ -108,7 +113,10 @@ public class RunWorld {
 		//=============================== Interface ==========================================================
 		
 		List<InterfaceTexture> interfaceTextures = new ArrayList<>();
-		interfaceTextures.add(new InterfaceTexture(loader.loadTexture("tree", "entities"), new Vector2f(0.25f, 0.25f), new Vector2f(0.0f, 0.0f)));
+//		interfaceTextures.add(new InterfaceTexture(waterFrameBuffers.getReflectionTexture(), 
+//													new Vector2f(-0.5f, 0.5f), new Vector2f(0.5f, 0.5f)));
+//		interfaceTextures.add(new InterfaceTexture(waterFrameBuffers.getRefractionTexture(), 
+//													new Vector2f( 0.5f, 0.5f), new Vector2f(0.5f, 0.5f)));
 		
 		FontType font = new FontType(loader.loadTexture("arial", "fonts"), new File("res\\fonts\\arial.fnt"));
 		GUIText text = new GUIText("", 1, font, new Vector2f(0, 0), 1f, true);
@@ -124,14 +132,35 @@ public class RunWorld {
 			
 			ParticleMaster.update(camera);
 			
+			//---- Water Reflection/Refraction ----
+//			GL11.glEnable(GL30.GL_CLIP_DISTANCE0);
+//			
+//			// Reflection Texture
+//			waterFrameBuffers.bindReflectionFrameBuffer();
+//			float distance = 2 * camera.getPosition().y - waterList.get(0).getHeight();
+//			camera.getPosition().y -= distance;
+//			camera.invertPitch();
+//			masterRenderer.renderWholeScene(entities, terrainCollection.getTerrainArray(), lights, camera, new Vector4f(0, 1, 0, -waterList.get(0).getHeight()));
+//			camera.getPosition().y += distance;
+//			camera.invertPitch();
+//			
+//			// Refraction Texture
+//			waterFrameBuffers.bindRefractionFrameBuffer();
+//			masterRenderer.renderWholeScene(entities, terrainCollection.getTerrainArray(), lights, camera, new Vector4f(0, -1, 0, waterList.get(0).getHeight()));
+//			
+//			waterFrameBuffers.unbindCurrentFrameBuffer();
+//			GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
+			
 			//----------- UI --------------------
 			text.setTextString(String.valueOf(player.getPosition().y));
 			TextMaster.loadText(text);
+			interfaceRenderer.render(interfaceTextures);
 
 			//------ Render Everything -----------
-			masterRenderer.renderWholeScene(entities, terrainCollection.getTerrainArray(), lights, camera);
+			
+			masterRenderer.renderWholeScene(entities, terrainCollection.getTerrainArray(), lights, camera, new Vector4f(0, 1, 0, 0));
 			ParticleMaster.renderParticles(camera);
-			waterRenderer.render(waterList, camera);
+//			waterRenderer.render(waterList, camera);
 			interfaceRenderer.render(interfaceTextures);
 			TextMaster.render();
 			DisplayManager.updateDisplay();
@@ -139,6 +168,7 @@ public class RunWorld {
 		
 		//================================ Clean Up ==========================================================
 		
+//		waterFrameBuffers.cleanUp();
 		ParticleMaster.cleanUp();
 		TextMaster.cleanUp();
 		masterRenderer.cleanUp();

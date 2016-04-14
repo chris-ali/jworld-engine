@@ -77,6 +77,10 @@ public class Camera {
 		return position;
 	}
 	
+	public void invertPitch() {
+		this.theta = -theta;
+	}
+	
 	public float getPitch() {
 		return theta;
 	}
