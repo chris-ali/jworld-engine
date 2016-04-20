@@ -8,7 +8,7 @@ public class Camera {
 	
 	// Camera's own angles
 	private float phi;
-	private float theta = 20f;
+	private float theta;
 	private float psi;
 	
 	private float cameraPanSpeed = 0.2f;
@@ -18,20 +18,30 @@ public class Camera {
 	private float cameraDistance = 25.0f;
 	private float cameraPsi = 0.0f;
 	
-	private Player player;
+	private boolean isChaseView = false;
+	private Vector3f pilotPosition;
 	
-	public Camera(Player player) {
-		this.player = player;
+	private Entity entityToFollow;
+	
+	public Camera(Entity toFollow) {
+		this.entityToFollow = toFollow;
+		theta = isChaseView ? 20f : 0f;
 	}
 	
 	private void calculateCameraPosition(float horizontalDistance, float verticalDistance) {
-		float camAngle = player.getRotY() + cameraPsi;
+		float camAngle = entityToFollow.getRotY() + cameraPsi;
 		float offsetX = horizontalDistance * (float) Math.sin(Math.toRadians(camAngle));
 		float offsetZ = horizontalDistance * (float) Math.cos(Math.toRadians(camAngle));
 		
-		position.x = player.getPosition().x - offsetX;
-		position.y = player.getPosition().y + verticalDistance;
-		position.z = player.getPosition().z - offsetZ;
+		if (isChaseView) {	
+			position.x = entityToFollow.getPosition().x - offsetX;
+			position.y = entityToFollow.getPosition().y + verticalDistance;
+			position.z = entityToFollow.getPosition().z - offsetZ;
+		} else {
+			position.x = entityToFollow.getPosition().x + pilotPosition.x;
+			position.y = entityToFollow.getPosition().y + pilotPosition.y;
+			position.z = entityToFollow.getPosition().z + pilotPosition.z;
+		}
 	}
 	
 	private float calculateHorizontalDistanceToPlayer() {
@@ -48,14 +58,14 @@ public class Camera {
 	}
 	
 	private void calculateCameraPitchToPlayer() {
-		if(Mouse.isButtonDown(1)) {
+		if(Mouse.isButtonDown(1) && isChaseView) {
 			float dTheta = Mouse.getDY() * mouseSensitivity;
 			theta += dTheta;
 		}
 	}
 	
 	private void calculateCameraYawToPlayer() {
-		if(Mouse.isButtonDown(1)) {
+		if(Mouse.isButtonDown(1) && isChaseView) {
 			float dPsi = Mouse.getDX() * mouseSensitivity;
 			cameraPsi += dPsi;
 		}
@@ -70,7 +80,7 @@ public class Camera {
 		float verticalDistance = calculateVerticalDistanceToPlayer();
 		calculateCameraPosition(horizontalDistance, verticalDistance);
 		
-		this.psi = 180 - (player.getRotY() + cameraPsi); 
+		this.psi = 180 - (entityToFollow.getRotY() + cameraPsi); 
 	}
 	
 	public Vector3f getPosition() {
@@ -123,5 +133,22 @@ public class Camera {
 
 	public void setMouseSensitivity(float mouseSensitivity) {
 		this.mouseSensitivity = mouseSensitivity;
+	}
+
+	public boolean isChaseView() {
+		return isChaseView;
+	}
+
+	public void setChaseView(boolean isChaseView) {
+		theta = isChaseView ? 20f : 0f;
+		this.isChaseView = isChaseView;
+	}
+
+	public Vector3f getPilotPosition() {
+		return pilotPosition;
+	}
+
+	public void setPilotPosition(Vector3f pilotPosition) {
+		this.pilotPosition = pilotPosition;
 	}
 }

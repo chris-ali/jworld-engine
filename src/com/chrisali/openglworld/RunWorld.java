@@ -83,6 +83,8 @@ public class RunWorld implements Runnable {
 		entities.addToStaticEntities(player);
 		
 		Camera camera = new Camera(player);
+		camera.setChaseView(true);
+		camera.setPilotPosition(new Vector3f(0,3,0));
 		
 		//=============================== Interface ==========================================================
 		
