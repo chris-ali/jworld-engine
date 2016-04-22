@@ -67,7 +67,7 @@ public class RunWorld implements Runnable {
 		
 		Random random = new Random();
 		for (int i = 0; i < 1000; i++)
-			new Cloud(clouds, new Vector3f(random.nextInt(800*5), 200, i*5), new Vector3f(0, 0, 0), 0, 100);
+			new Cloud(clouds, new Vector3f(random.nextInt(800*5), 200, i*5), new Vector3f(0, 0, 0), 0, 200);
 		
 		//================================= Entities ==========================================================
 		
@@ -83,8 +83,8 @@ public class RunWorld implements Runnable {
 		entities.addToStaticEntities(player);
 		
 		Camera camera = new Camera(player);
-		camera.setChaseView(true);
-		camera.setPilotPosition(new Vector3f(0,3,0));
+		camera.setChaseView(false);
+		camera.setPilotPosition(new Vector3f(-10, 3, 0));
 		
 		//=============================== Interface ==========================================================
 		
@@ -96,11 +96,15 @@ public class RunWorld implements Runnable {
 		GUIText text = new GUIText("", 1, font, new Vector2f(0, 0), 1f, true);
 		
 		//=============================== Main Loop ==========================================================
+		float theta = 0.0f;
 		
 		while (!Display.isCloseRequested()) {
 			//--------- Movement ----------------
 			camera.move();
 			player.move(terrainCollection.getTerrainArray());
+						
+			theta += 0;
+			player.setRotZ(theta);
 			
 			//--------- Particles ---------------
 			ParticleMaster.update(camera);

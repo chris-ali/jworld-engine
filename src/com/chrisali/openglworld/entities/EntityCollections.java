@@ -12,6 +12,14 @@ import com.chrisali.openglworld.renderengine.OBJLoader;
 import com.chrisali.openglworld.terrain.Terrain;
 import com.chrisali.openglworld.textures.ModelTexture;
 
+/**
+ * Randomly generates numerous objects in the world, spawning them to a list of entities
+ * rendered by OpenGL; Static methods are also provided to allow the user to add custom entities in
+ * specific locations to these lists
+ * 
+ * @author Christopher Ali
+ *
+ */
 public class EntityCollections {
 	
 	private List<Entity> staticEntities = new ArrayList<>();
@@ -27,6 +35,9 @@ public class EntityCollections {
 		this.lights = lights;
 	}
 	
+	/**
+	 * Creates numerous tree {@link Entity} objects to populate the world
+	 */
 	public void createRandomStaticEntities() {
 		
 		TexturedModel planatusforest = new TexturedModel(OBJLoader.loadObjModel("grassModel", "entities", loader), 
@@ -52,7 +63,7 @@ public class EntityCollections {
 				z = random.nextFloat() * Terrain.getSize()*terrainArray.length;
 				y = Terrain.getCurrentTerrain(terrainArray, x, z).getTerrainHeight(x, z);
 				
-				staticEntities.add(new Entity(pineforest, new Vector3f(x, y, z), 
+				staticEntities.add(new Entity(pineforest, new Vector3f(x, y-2, z), 
 					0, random.nextFloat()*360, 0, random.nextFloat() + 6));
 			}
 			
@@ -61,7 +72,7 @@ public class EntityCollections {
 				z = random.nextFloat() * Terrain.getSize()*terrainArray.length;
 				y = Terrain.getCurrentTerrain(terrainArray, x, z).getTerrainHeight(x, z);
 				
-				staticEntities.add(new Entity(oakforest, new Vector3f(x, y, z), 
+				staticEntities.add(new Entity(oakforest, new Vector3f(x, y-2, z), 
 					0, random.nextFloat()*360, 0, random.nextFloat()* 1 + 5));
 			}
 			
@@ -70,12 +81,15 @@ public class EntityCollections {
 				z = random.nextFloat() * Terrain.getSize()*terrainArray.length;
 				y = Terrain.getCurrentTerrain(terrainArray, x, z).getTerrainHeight(x, z);
 				
-				staticEntities.add(new Entity(oakforest, new Vector3f(x, y, z), 
+				staticEntities.add(new Entity(oakforest, new Vector3f(x, y-2, z), 
 					0, random.nextFloat()*360, 0, random.nextFloat()* 1 + 5));
 			}
 		}
 	}
 	
+	/**
+	 *  Generates lit {@link Entity} objects along with {@link Light} objects in various locations  
+	 */
 	public void createRandomLitEntities() {
 		float x, y, z;
 		TexturedModel lamp =  new TexturedModel(OBJLoader.loadObjModel("lamp", "entities", loader), 

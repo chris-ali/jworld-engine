@@ -4,6 +4,12 @@ import org.lwjgl.util.vector.Vector3f;
 
 import com.chrisali.openglworld.models.TexturedModel;
 
+/**
+ * An {@link Entity} with no physics attached to it that relies on an outside source to set its position/angles
+ * 
+ * @author Christopher Ali
+ *
+ */
 public class Ownship extends Entity {
 
 	public Ownship(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {

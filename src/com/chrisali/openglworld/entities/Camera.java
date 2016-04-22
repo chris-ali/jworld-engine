@@ -3,6 +3,13 @@ package com.chrisali.openglworld.entities;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector3f;
 
+/**
+ * Camera for the game engine, which needs an {@link Entity} as a reference to follow.
+ * A chase view is available for panning around in 3rd person
+ * 
+ * @author Christopher Ali
+ *
+ */
 public class Camera {
 	private Vector3f position = new Vector3f(0,1,0);
 	
@@ -11,25 +18,42 @@ public class Camera {
 	private float theta;
 	private float psi;
 	
-	private float cameraPanSpeed = 0.2f;
-	private float mouseSensitivity = 0.2f;
+	private float cameraPanSpeed = 0.1f;
+	private float mouseSensitivity = 0.1f;
 	
 	// Camera in relation to player/ownship
-	private float cameraDistance = 25.0f;
-	private float cameraPsi = 0.0f;
+	private float cameraDistanceToEntity;
+	private float cameraToEntityPhi = 0.0f;
+	private float cameraToEntityTheta = 0.0f;
+	private float cameraToEntityPsi = 0.0f;
+	
 	
 	private boolean isChaseView = false;
 	private Vector3f pilotPosition;
 	
 	private Entity entityToFollow;
 	
-	public Camera(Entity toFollow) {
-		this.entityToFollow = toFollow;
-		theta = isChaseView ? 20f : 0f;
+	/**
+	 * Constructor that takes an {@link Entity} to follow as it moves about the world;
+	 * if the isChaseView boolean is set the distance and angle of the camera are zoomed out and pitched down
+	 * 
+	 * @param entityToFollow
+	 */
+	public Camera(Entity entityToFollow) {
+		this.entityToFollow = entityToFollow;
+		cameraToEntityTheta = isChaseView ? 20f : 0f;
+		cameraDistanceToEntity = isChaseView ? 25.0f : 0.0f;
 	}
 	
+	/**
+	 * Sets the position of the camera based on trigometric calculations performed in the XZ plane of
+	 * the entity
+	 * 
+	 * @param horizontalDistance
+	 * @param verticalDistance
+	 */
 	private void calculateCameraPosition(float horizontalDistance, float verticalDistance) {
-		float camAngle = entityToFollow.getRotY() + cameraPsi;
+		float camAngle = entityToFollow.getRotY() + cameraToEntityPsi;
 		float offsetX = horizontalDistance * (float) Math.sin(Math.toRadians(camAngle));
 		float offsetZ = horizontalDistance * (float) Math.cos(Math.toRadians(camAngle));
 		
@@ -38,57 +62,70 @@ public class Camera {
 			position.y = entityToFollow.getPosition().y + verticalDistance;
 			position.z = entityToFollow.getPosition().z - offsetZ;
 		} else {
-			position.x = entityToFollow.getPosition().x + pilotPosition.x;
-			position.y = entityToFollow.getPosition().y + pilotPosition.y;
-			position.z = entityToFollow.getPosition().z + pilotPosition.z;
+			position.x = entityToFollow.getPosition().x - offsetX;
+			position.y = entityToFollow.getPosition().y + verticalDistance + pilotPosition.y;
+			position.z = entityToFollow.getPosition().z - offsetZ + pilotPosition.z;
 		}
 	}
 	
+	/**
+	 * Calculates horizontal distance based on the camera's pitch angle and the 
+	 * magnitude of the distance vector from the camera to player; if chase view
+	 * is enabled, distance vector is pilot's "eye" distance vector from the origin
+	 * of the entity to the camera 
+	 * 
+	 * @return HorizontalDistanceToPlayer
+	 */
 	private float calculateHorizontalDistanceToPlayer() {
-		return  (cameraDistance * (float) Math.cos(Math.toRadians(theta)));
+		if (isChaseView)
+			return  (cameraDistanceToEntity * (float) Math.cos(Math.toRadians(theta)));
+		else
+			return  (pilotPosition.x * (float) Math.cos(Math.toRadians(theta)));
 	}
 	
+	/**
+	 * Calculates vertical distance based on the camera's pitch angle and the 
+	 * magnitude of the distance vector from the camera to player; if chase view
+	 * is enabled, distance vector is pilot's "eye" distance vector from the origin
+	 * of the entity to the camera 
+	 * 
+	 * @return VerticalDistanceToPlayer
+	 */
 	private float calculateVerticalDistanceToPlayer() {
-		return  (cameraDistance * (float) Math.sin(Math.toRadians(theta)));
+		if (isChaseView)
+			return  (cameraDistanceToEntity * (float) Math.sin(Math.toRadians(theta)));
+		else
+			return  (pilotPosition.x * (float) Math.sin(Math.toRadians(theta)));
 	}
 	
-	private void calculateCameraZoomToPlayer() {
-		float zoomLevel = Mouse.getDWheel() * 0.05f;
-		cameraDistance -= zoomLevel;
-	}
-	
-	private void calculateCameraPitchToPlayer() {
-		if(Mouse.isButtonDown(1) && isChaseView) {
-			float dTheta = Mouse.getDY() * mouseSensitivity;
-			theta += dTheta;
-		}
-	}
-	
-	private void calculateCameraYawToPlayer() {
-		if(Mouse.isButtonDown(1) && isChaseView) {
-			float dPsi = Mouse.getDX() * mouseSensitivity;
-			cameraPsi += dPsi;
-		}
-	}
-	
+	/**
+	 * Translates and rotates the camera based on the entity's position and angles; these
+	 * values are then sent to the shader classes where OpenGL can draw the scene. <p />
+	 * 
+	 * If chase view is enabled, mouse inputs are tracked here to move/rotate/zoom the 
+	 * camera as needed
+	 */
 	public void move() {
-		calculateCameraZoomToPlayer();
-		calculateCameraPitchToPlayer();
-		calculateCameraYawToPlayer();
-				
-		float horizontalDistance = calculateHorizontalDistanceToPlayer();
-		float verticalDistance = calculateVerticalDistanceToPlayer();
-		calculateCameraPosition(horizontalDistance, verticalDistance);
+		if(isChaseView)  {
+			cameraDistanceToEntity -= Mouse.getDWheel() * 0.05f;
+			if(Mouse.isButtonDown(1)) {
+				cameraToEntityTheta += Mouse.getDY() * mouseSensitivity;
+				cameraToEntityPsi += Mouse.getDX() * mouseSensitivity;
+			}
+		}
 		
-		this.psi = 180 - (entityToFollow.getRotY() + cameraPsi); 
+		calculateCameraPosition(calculateHorizontalDistanceToPlayer(), 
+								calculateVerticalDistanceToPlayer());
+		
+		if (isChaseView) {
+			phi   =   0 - (entityToFollow.getRotZ() + cameraToEntityPhi);
+			theta =   0 + (entityToFollow.getRotX() + cameraToEntityTheta);
+		}
+		psi   = 180 - (entityToFollow.getRotY() + cameraToEntityPsi);
 	}
 	
 	public Vector3f getPosition() {
 		return position;
-	}
-	
-	public void invertPitch() {
-		this.theta = -theta;
 	}
 	
 	public float getPitch() {
@@ -138,9 +175,16 @@ public class Camera {
 	public boolean isChaseView() {
 		return isChaseView;
 	}
-
+	
+	/**
+	 * Sets the camera to use the mouse to pan around if true, 
+	 * otherwise a fixed first person view is used
+	 * 
+	 * @param isChaseView
+	 */
 	public void setChaseView(boolean isChaseView) {
-		theta = isChaseView ? 20f : 0f;
+		cameraToEntityTheta = isChaseView ? 20f : 0f;
+		cameraDistanceToEntity = isChaseView ? 25.0f : 0.0f;
 		this.isChaseView = isChaseView;
 	}
 

@@ -7,12 +7,18 @@ import com.chrisali.openglworld.models.TexturedModel;
 import com.chrisali.openglworld.renderengine.DisplayManager;
 import com.chrisali.openglworld.terrain.Terrain;
 
+/**
+ * An {@link Entity} that the user can move around the world with the keyboard
+ * 
+ * @author Christopher Ali
+ *
+ */
 public class Player extends Entity {
 	
 	private static final float RUN_SPEED = 20;
 	private static final float TURN_SPEED = 160;
 	private static final float GRAVITY = -50;
-	private static final float JUMP_POWER = 30;
+	private static final float JUMP_POWER = 20;
 	
 	private float currentSpeed = 0;
 	private float currentVerticalSpeed = 0;
@@ -24,6 +30,11 @@ public class Player extends Entity {
 		super(model, position, rotX, rotY, rotZ, scale);
 	}
 	
+	/**
+	 * Simple physics to move the player around the world while being tied to the ground
+	 * 
+	 * @param terrainArray
+	 */
 	public void move(Terrain[][] terrainArray) {
 		checkInputs();
 		
@@ -48,13 +59,9 @@ public class Player extends Entity {
 		
 	}
 	
-	private void jump() {
-		if(!isAirborne) {
-			this.currentVerticalSpeed = JUMP_POWER;
-			isAirborne = true;
-		}
-	}
-	
+	/**
+	 * Scans for key presses and sets the run/turn/jump speed as appropriate
+	 */
 	private void checkInputs() {
 		if(Keyboard.isKeyDown(Keyboard.KEY_W)) {
 			this.currentSpeed = RUN_SPEED;
@@ -72,8 +79,12 @@ public class Player extends Entity {
 			this.currentTurnSpeed = 0;
 		}
 		
-		if(Keyboard.isKeyDown(Keyboard.KEY_SPACE))
-			jump();
+		if(Keyboard.isKeyDown(Keyboard.KEY_SPACE)){
+			if(!isAirborne) {
+				this.currentVerticalSpeed = JUMP_POWER;
+				isAirborne = true;
+			}
+		}
 	}
 	
 }
