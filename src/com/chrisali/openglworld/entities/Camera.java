@@ -117,7 +117,7 @@ public class Camera {
 		calculateCameraPosition(calculateHorizontalDistanceToPlayer(), 
 								calculateVerticalDistanceToPlayer());
 		
-		if (isChaseView) {
+		if (!isChaseView) {
 			phi   =   0 - (entityToFollow.getRotZ() + cameraToEntityPhi);
 			theta =   0 + (entityToFollow.getRotX() + cameraToEntityTheta);
 		}

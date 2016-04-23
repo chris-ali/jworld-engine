@@ -29,37 +29,64 @@ import com.chrisali.openglworld.terrain.TerrainCollection;
 import com.chrisali.openglworld.textures.ModelTexture;
 
 public class RunWorld implements Runnable {
-
+	
+	private Loader loader;
+	private MasterRenderer masterRenderer;
+	private List<Light> lights;
+	
+	private TerrainCollection terrainCollection;
+	private EntityCollections entities;
+	
+	private Camera camera;
+	private Player player;
+	
+	private GUIText text;
+	
 	public static void main(String[] args) {new RunWorld().run();}
 
-	@Override
-	public void run() {
+	public RunWorld() {
 		//=================================== Set Up ==========================================================
 		
 		DisplayManager.createDisplay();
 		DisplayManager.setHeight(900);
 		DisplayManager.setWidth(1440);
 		
-		Loader loader = new Loader();
-		
-		MasterRenderer masterRenderer = new MasterRenderer();
+		masterRenderer = new MasterRenderer();
 		MasterRenderer.setSkyColor(new Vector3f(0.0f, 0.75f, 0.95f));
 		MasterRenderer.setFogDensity(0.0015f);
 		MasterRenderer.setFogGradient(1.5f);
 		
-		ParticleMaster.init(loader, masterRenderer.getProjectionMatrix());
+		loader = new Loader();
 		
+		ParticleMaster.init(loader, masterRenderer.getProjectionMatrix());
 		TextMaster.init(loader);
 		
-		//==================================== Sun ============================================================
+		//==================================== Sun ===========================================================
 		
-		List<Light> lights = new ArrayList<>();
+		lights = new ArrayList<>();
 		lights.add(new Light(new Vector3f(20000, 40000, 20000), new Vector3f(0.8f, 0.8f, 0.8f)));
 		
 		//================================= Terrain ==========================================================
 		
-		TerrainCollection terrainCollection = new TerrainCollection(4, loader);
-
+		terrainCollection = new TerrainCollection(4, loader);
+		
+		//================================= Entities ==========================================================
+		
+		entities = new EntityCollections(lights, terrainCollection.getTerrainArray(), loader);
+		entities.createRandomStaticEntities();
+		
+		//================================== Player ===========================================================
+		
+		TexturedModel bunny =  new TexturedModel(OBJLoader.loadObjModel("bunny", "Entities", loader), 
+			    								new ModelTexture(loader.loadTexture("bunny", "Entities")));
+		player = new Player(bunny, new Vector3f(800, 0, 800), 0, 0, 0, 0.5f);
+		
+		entities.addToStaticEntities(player);
+		
+		camera = new Camera(player);
+		camera.setChaseView(false);
+		camera.setPilotPosition(new Vector3f(0, 0, 0));
+		
 		//=============================== Particles ==========================================================
 		
 		ParticleTexture clouds = new ParticleTexture(loader.loadTexture("clouds", "Particles"), 4, true);
@@ -68,30 +95,16 @@ public class RunWorld implements Runnable {
 		for (int i = 0; i < 1000; i++)
 			new Cloud(clouds, new Vector3f(random.nextInt(800*5), 200, i*5), new Vector3f(0, 0, 0), 0, 200);
 		
-		//================================= Entities ==========================================================
-		
-		EntityCollections entities = new EntityCollections(lights, terrainCollection.getTerrainArray(), loader);
-		entities.createRandomStaticEntities();
-		
-		//================================== Player ===========================================================
-		
-		TexturedModel bunny =  new TexturedModel(OBJLoader.loadObjModel("bunny", "Entities", loader), 
-			    								new ModelTexture(loader.loadTexture("bunny", "Entities")));
-		Player player = new Player(bunny, new Vector3f(800, 0, 800), 0, 0, 0, 0.5f);
-		
-		entities.addToStaticEntities(player);
-		
-		Camera camera = new Camera(player);
-		camera.setChaseView(false);
-		camera.setPilotPosition(new Vector3f(-10, 3, 0));
-		
 		//=============================== Interface ==========================================================
 		
 		FontType font = new FontType(loader.loadTexture("arial", "Fonts"), new File("Resources\\Fonts\\arial.fnt"));
-		GUIText text = new GUIText("", 1, font, new Vector2f(0, 0), 1f, true);
-		
+		text = new GUIText("", 1, font, new Vector2f(0, 0), 1f, true);
+	}	
+	
+	@Override
+	public void run() {
 		//=============================== Main Loop ==========================================================
-		
+
 		while (!Display.isCloseRequested()) {
 			//--------- Movement ----------------
 			camera.move();
@@ -121,7 +134,5 @@ public class RunWorld implements Runnable {
 		loader.cleanUp();
 		
 		DisplayManager.closeDisplay();
-		
 	}
-
 }
