@@ -12,8 +12,6 @@ import com.chrisali.openglworld.entities.Light;
 import com.chrisali.openglworld.toolbox.Utilities;
 
 public class StaticShader extends ShaderProgram {
-	
-	private static final int MAX_LIGHTS = 8;
 
 	private static final String VERTEX_FILE = SHADER_ROOT_PATH + "shaders\\staticVertexShader.txt";
 	private static final String FRAGMENT_FILE = SHADER_ROOT_PATH + "shaders\\staticFragmentShader.txt";
@@ -60,11 +58,11 @@ public class StaticShader extends ShaderProgram {
 		location_gradient = super.getUniformLocation("gradient");
 		location_clippingPlane = super.getUniformLocation("clippingPlane");
 		
-		location_lightPosition = new int[MAX_LIGHTS];
-		location_lightColor = new int[MAX_LIGHTS];
-		location_lightAttenuation = new int[MAX_LIGHTS];
+		location_lightPosition = new int[maxLights];
+		location_lightColor = new int[maxLights];
+		location_lightAttenuation = new int[maxLights];
 		
-		for (int i = 0; i < MAX_LIGHTS; i++) {
+		for (int i = 0; i < maxLights; i++) {
 			location_lightPosition[i] = super.getUniformLocation("lightPosition[" + i + "]");
 			location_lightColor[i] = super.getUniformLocation("lightColor[" + i + "]");
 			location_lightAttenuation[i] = super.getUniformLocation("lightAttenuation[" + i + "]");
@@ -106,7 +104,7 @@ public class StaticShader extends ShaderProgram {
 	}
 	
 	public void loadLights(List<Light> lights) {
-		for(int i = 0; i < MAX_LIGHTS; i++) {
+		for(int i = 0; i < maxLights; i++) {
 			if (i < lights.size()) {
 				super.loadVector(location_lightPosition[i], lights.get(i).getPosition());
 				super.loadVector(location_lightColor[i], lights.get(i).getColor());

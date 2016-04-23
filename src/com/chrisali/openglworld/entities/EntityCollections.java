@@ -40,12 +40,12 @@ public class EntityCollections {
 	 */
 	public void createRandomStaticEntities() {
 		
-		TexturedModel planatusforest = new TexturedModel(OBJLoader.loadObjModel("grassModel", "entities", loader), 
-							new ModelTexture(loader.loadTexture("platanusforest", "entities")));
-		TexturedModel pineforest = new TexturedModel(OBJLoader.loadObjModel("grassModel", "entities", loader), 
-							new ModelTexture(loader.loadTexture("pineforest", "entities")));
-		TexturedModel oakforest = new TexturedModel(OBJLoader.loadObjModel("grassModel", "entities", loader), 
-						new ModelTexture(loader.loadTexture("oakforest", "entities")));
+		TexturedModel planatusforest = new TexturedModel(OBJLoader.loadObjModel("grassModel", "Entities", loader), 
+											new ModelTexture(loader.loadTexture("platanusforest", "Entities")));
+		TexturedModel pineforest = new TexturedModel(OBJLoader.loadObjModel("grassModel", "Entities", loader), 
+											new ModelTexture(loader.loadTexture("pineforest", "Entities")));
+		TexturedModel oakforest = new TexturedModel(OBJLoader.loadObjModel("grassModel", "Entities", loader), 
+											new ModelTexture(loader.loadTexture("oakforest", "Entities")));
 		
 		planatusforest.getTexture().setHasTransparency(true);
 		planatusforest.getTexture().setUseFakeLighting(true);
@@ -92,8 +92,8 @@ public class EntityCollections {
 	 */
 	public void createRandomLitEntities() {
 		float x, y, z;
-		TexturedModel lamp =  new TexturedModel(OBJLoader.loadObjModel("lamp", "entities", loader), 
-						      new ModelTexture(loader.loadTexture("lamp", "entities")));
+		TexturedModel lamp =  new TexturedModel(OBJLoader.loadObjModel("lamp", "Entities", loader), 
+						      new ModelTexture(loader.loadTexture("lamp", "Entities")));
 		
 		lamp.getTexture().setUseFakeLighting(true);
 		
@@ -131,8 +131,8 @@ public class EntityCollections {
 	 * @param scale
 	 */
 	public void createStaticEntity(String entityName, Vector3f position, float xRot, float yRot, float zRot, float scale) {
-		TexturedModel staticEntity =  new TexturedModel(OBJLoader.loadObjModel(entityName, "entities", loader), 
-														new ModelTexture(loader.loadTexture(entityName, "entities")));
+		TexturedModel staticEntity =  new TexturedModel(OBJLoader.loadObjModel(entityName, "Entities", loader), 
+														new ModelTexture(loader.loadTexture(entityName, "Entities")));
 		
 		staticEntities.add(new Entity(staticEntity, position, xRot, yRot, zRot, scale));
 	}
@@ -148,8 +148,8 @@ public class EntityCollections {
 	 * @param scale
 	 */
 	public void createStaticEntity(String entityName, float xPos, float zPos, float yRot, float scale) {
-		TexturedModel staticEntity =  new TexturedModel(OBJLoader.loadObjModel(entityName, "entities", loader), 
-														new ModelTexture(loader.loadTexture(entityName, "entities")));
+		TexturedModel staticEntity =  new TexturedModel(OBJLoader.loadObjModel(entityName, "Entities", loader), 
+														new ModelTexture(loader.loadTexture(entityName, "Entities")));
 		float yPos = Terrain.getCurrentTerrain(terrainArray, xPos, zPos).getTerrainHeight(xPos, zPos);
 		Vector3f position = new Vector3f(xPos, yPos, zPos);
 		
@@ -164,8 +164,8 @@ public class EntityCollections {
 	 * @param scale
 	 */
 	public void createStaticEntity(String entityName, Player player, float scale) {
-		TexturedModel staticEntity =  new TexturedModel(OBJLoader.loadObjModel(entityName, "entities", loader), 
-														new ModelTexture(loader.loadTexture(entityName, "entities")));
+		TexturedModel staticEntity =  new TexturedModel(OBJLoader.loadObjModel(entityName, "Entities", loader), 
+														new ModelTexture(loader.loadTexture(entityName, "Entities")));
 
 		staticEntities.add(new Entity(staticEntity, player.getPosition(), player.getRotX(), player.getRotY(), player.getRotZ(), scale));
 	}
@@ -187,8 +187,8 @@ public class EntityCollections {
 	 */
 	public void createLitEntity(String entityName, Vector3f position, float xRot, float yRot, float zRot, float scale, 
 								 Vector3f color, Vector3f attenuation, Vector3f lightPosOffset) {
-		TexturedModel litEntity =  new TexturedModel(OBJLoader.loadObjModel(entityName, "entities", loader), 
-													 new ModelTexture(loader.loadTexture(entityName, "entities")));
+		TexturedModel litEntity =  new TexturedModel(OBJLoader.loadObjModel(entityName, "Entities", loader), 
+													 new ModelTexture(loader.loadTexture(entityName, "Entities")));
 		
 		litEntities.add(new Entity(litEntity, position, xRot, yRot, zRot, scale));
 		
@@ -214,8 +214,8 @@ public class EntityCollections {
 	 */
 	public void createLitEntity(String entityName, float xPos, float zPos, float yRot, float scale, 
 								 Vector3f color, Vector3f attenuation, Vector3f lightPosOffset) {
-		TexturedModel litEntity =  new TexturedModel(OBJLoader.loadObjModel(entityName, "entities", loader), 
-													 new ModelTexture(loader.loadTexture(entityName, "entities")));
+		TexturedModel litEntity =  new TexturedModel(OBJLoader.loadObjModel(entityName, "Entities", loader), 
+													 new ModelTexture(loader.loadTexture(entityName, "Entities")));
 		float yPos = Terrain.getCurrentTerrain(terrainArray, xPos, zPos).getTerrainHeight(xPos, zPos);
 		Vector3f position = new Vector3f(xPos, yPos, zPos);
 		
@@ -240,8 +240,8 @@ public class EntityCollections {
 	 */
 	public void createLitEntity(String entityName, Player player, float scale, 
 								Vector3f color, Vector3f attenuation, Vector3f lightPosOffset) {
-		TexturedModel litEntity =  new TexturedModel(OBJLoader.loadObjModel(entityName, "entities", loader), 
-													 new ModelTexture(loader.loadTexture(entityName, "entities")));
+		TexturedModel litEntity =  new TexturedModel(OBJLoader.loadObjModel(entityName, "Entities", loader), 
+													 new ModelTexture(loader.loadTexture(entityName, "Entities")));
 		Vector3f position = player.getPosition();
 		
 		litEntities.add(new Entity(litEntity, position, player.getRotX(), player.getRotY(), player.getRotZ(), scale));

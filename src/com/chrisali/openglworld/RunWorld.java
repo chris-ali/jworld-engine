@@ -17,16 +17,15 @@ import com.chrisali.openglworld.entities.Player;
 import com.chrisali.openglworld.interfaces.font.FontType;
 import com.chrisali.openglworld.interfaces.font.GUIText;
 import com.chrisali.openglworld.interfaces.font.TextMaster;
-import com.chrisali.openglworld.interfaces.ui.InterfaceTexture;
 import com.chrisali.openglworld.models.TexturedModel;
 import com.chrisali.openglworld.particles.Cloud;
 import com.chrisali.openglworld.particles.ParticleMaster;
 import com.chrisali.openglworld.particles.ParticleTexture;
 import com.chrisali.openglworld.renderengine.DisplayManager;
-import com.chrisali.openglworld.renderengine.InterfaceRenderer;
 import com.chrisali.openglworld.renderengine.Loader;
 import com.chrisali.openglworld.renderengine.MasterRenderer;
 import com.chrisali.openglworld.renderengine.OBJLoader;
+import com.chrisali.openglworld.shaders.ShaderProgram;
 import com.chrisali.openglworld.terrain.TerrainCollection;
 import com.chrisali.openglworld.textures.ModelTexture;
 
@@ -43,13 +42,16 @@ public class RunWorld implements Runnable {
 		DisplayManager.setWidth(1440);
 		
 		Loader loader = new Loader();
+		
 		MasterRenderer masterRenderer = new MasterRenderer();
 		MasterRenderer.setSkyColor(new Vector3f(0.0f, 0.75f, 0.95f));
 		MasterRenderer.setFogDensity(0.0015f);
 		MasterRenderer.setFogGradient(1.5f);
 		
+		ShaderProgram.setMaxLights(8);
+		
 		ParticleMaster.init(loader, masterRenderer.getProjectionMatrix());
-		InterfaceRenderer interfaceRenderer = new InterfaceRenderer(loader);
+		
 		TextMaster.init(loader);
 		
 		//==================================== Sun ============================================================
@@ -63,7 +65,7 @@ public class RunWorld implements Runnable {
 
 		//=============================== Particles ==========================================================
 		
-		ParticleTexture clouds = new ParticleTexture(loader.loadTexture("clouds", "particles"), 4, true);
+		ParticleTexture clouds = new ParticleTexture(loader.loadTexture("clouds", "Particles"), 4, true);
 		
 		Random random = new Random();
 		for (int i = 0; i < 1000; i++)
@@ -76,8 +78,8 @@ public class RunWorld implements Runnable {
 		
 		//================================== Player ===========================================================
 		
-		TexturedModel bunny =  new TexturedModel(OBJLoader.loadObjModel("bunny", "entities", loader), 
-			    								new ModelTexture(loader.loadTexture("bunny", "entities")));
+		TexturedModel bunny =  new TexturedModel(OBJLoader.loadObjModel("bunny", "Entities", loader), 
+			    								new ModelTexture(loader.loadTexture("bunny", "Entities")));
 		Player player = new Player(bunny, new Vector3f(800, 0, 800), 0, 0, 0, 0.5f);
 		
 		entities.addToStaticEntities(player);
@@ -88,23 +90,15 @@ public class RunWorld implements Runnable {
 		
 		//=============================== Interface ==========================================================
 		
-		List<InterfaceTexture> interfaceTextures = new ArrayList<>();
-//		interfaceTextures.add(new InterfaceTexture(waterFrameBuffers.getReflectionTexture(), 
-//													new Vector2f(-0.5f, 0.5f), new Vector2f(0.5f, 0.5f)));
-		
-		FontType font = new FontType(loader.loadTexture("arial", "fonts"), new File("res\\fonts\\arial.fnt"));
+		FontType font = new FontType(loader.loadTexture("arial", "Fonts"), new File("Resources\\Fonts\\arial.fnt"));
 		GUIText text = new GUIText("", 1, font, new Vector2f(0, 0), 1f, true);
 		
 		//=============================== Main Loop ==========================================================
-		float theta = 0.0f;
 		
 		while (!Display.isCloseRequested()) {
 			//--------- Movement ----------------
 			camera.move();
 			player.move(terrainCollection.getTerrainArray());
-						
-			theta += 0;
-			player.setRotZ(theta);
 			
 			//--------- Particles ---------------
 			ParticleMaster.update(camera);
@@ -112,12 +106,11 @@ public class RunWorld implements Runnable {
 			//----------- UI --------------------
 			text.setTextString(String.valueOf(player.getPosition().y));
 			TextMaster.loadText(text);
-			interfaceRenderer.render(interfaceTextures);
 
 			//------ Render Everything -----------
-			masterRenderer.renderWholeScene(entities, terrainCollection.getTerrainArray(), lights, camera, new Vector4f(0, 1, 0, 0));
+			masterRenderer.renderWholeScene(entities, terrainCollection.getTerrainArray(), 
+											lights, camera, new Vector4f(0, 1, 0, 0));
 			ParticleMaster.renderParticles(camera);
-			interfaceRenderer.render(interfaceTextures);
 			TextMaster.render();
 			
 			DisplayManager.updateDisplay();
@@ -128,7 +121,6 @@ public class RunWorld implements Runnable {
 		ParticleMaster.cleanUp();
 		TextMaster.cleanUp();
 		masterRenderer.cleanUp();
-		interfaceRenderer.cleanUp();
 		loader.cleanUp();
 		
 		DisplayManager.closeDisplay();

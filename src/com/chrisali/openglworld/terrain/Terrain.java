@@ -40,7 +40,7 @@ public class Terrain {
 		
 		BufferedImage image = null;
 		
-		try {image = ImageIO.read(new File("res\\" + directory + "\\" + fileName + ".png"));} 
+		try {image = ImageIO.read(new File("Resources\\" + directory + "\\" + fileName + ".png"));} 
 		catch (IOException e) {System.err.println("Could not load height map: " + fileName + ".png");}
 		
 		int VERTEX_COUNT = image.getHeight();
