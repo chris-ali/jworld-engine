@@ -126,12 +126,4 @@ public abstract class ShaderProgram {
 		
 		return shaderID;
 	}
-
-	public static int getMaxLights() {
-		return maxLights;
-	}
-
-	public static void setMaxLights(int maxLights) {
-		ShaderProgram.maxLights = maxLights;
-	}
 }

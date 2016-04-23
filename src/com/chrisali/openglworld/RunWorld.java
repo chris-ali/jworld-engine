@@ -25,7 +25,6 @@ import com.chrisali.openglworld.renderengine.DisplayManager;
 import com.chrisali.openglworld.renderengine.Loader;
 import com.chrisali.openglworld.renderengine.MasterRenderer;
 import com.chrisali.openglworld.renderengine.OBJLoader;
-import com.chrisali.openglworld.shaders.ShaderProgram;
 import com.chrisali.openglworld.terrain.TerrainCollection;
 import com.chrisali.openglworld.textures.ModelTexture;
 
@@ -47,8 +46,6 @@ public class RunWorld implements Runnable {
 		MasterRenderer.setSkyColor(new Vector3f(0.0f, 0.75f, 0.95f));
 		MasterRenderer.setFogDensity(0.0015f);
 		MasterRenderer.setFogGradient(1.5f);
-		
-		ShaderProgram.setMaxLights(8);
 		
 		ParticleMaster.init(loader, masterRenderer.getProjectionMatrix());
 		
