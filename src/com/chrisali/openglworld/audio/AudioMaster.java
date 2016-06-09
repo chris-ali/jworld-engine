@@ -1,5 +1,8 @@
 package com.chrisali.openglworld.audio;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +10,7 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.util.WaveData;
+import org.lwjgl.util.vector.Vector3f;
 
 public class AudioMaster {
 	
@@ -17,22 +21,26 @@ public class AudioMaster {
 		catch (LWJGLException e) {System.err.println("Unable to initialize OpenAL!\n" + e.getMessage());}
 	}
 	
-	public static void setListenerData() {
-		AL10.alListener3f(AL10.AL_POSITION, 0, 0, 0);
-		AL10.alListener3f(AL10.AL_VELOCITY, 0, 0, 0);
+	public static void setListenerData(Vector3f position, Vector3f  velocity) {
+		AL10.alListener3f(AL10.AL_POSITION, position.x, position.y, position.z);
+		AL10.alListener3f(AL10.AL_VELOCITY, velocity.x, velocity.y, velocity.z);
 	}
 	
-	public static int loadSound(String file) {
+	public static int loadSound(String directory, String fileName) {
 		int buffer = AL10.alGenBuffers();
 		buffers.add(buffer);
 		
-		WaveData waveFile = WaveData.create(file);
-		AL10.alBufferData(buffer, waveFile.format, waveFile.data, waveFile.samplerate);
-		waveFile.dispose();
+		try {
+			WaveData waveFile = WaveData.create(new BufferedInputStream(new FileInputStream("Resources\\" + directory + "\\" + fileName + ".wav")));
+			AL10.alBufferData(buffer, waveFile.format, waveFile.data, waveFile.samplerate);
+			waveFile.dispose();
+		} catch (IOException | NullPointerException e) {
+			System.err.println("Could not load sound: " + fileName + ".wav");
+		}
 		
 		return buffer;
 	}
-	
+
 	public static void cleanUp() {
 		for (int buffer : buffers) {AL10.alDeleteBuffers(buffer);}
 		
