@@ -36,6 +36,7 @@ public class AudioMaster {
 			waveFile.dispose();
 		} catch (IOException | NullPointerException e) {
 			System.err.println("Could not load sound: " + fileName + ".wav");
+			System.err.println(e.getMessage());
 		}
 		
 		return buffer;

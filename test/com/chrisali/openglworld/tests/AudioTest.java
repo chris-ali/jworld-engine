@@ -16,9 +16,11 @@ public class AudioTest {
 	public static void main(String[] args) {
 		AudioTest test = new AudioTest();
 		
-		test.AudioTestLoop();
-		test.AudioTestMovement();
-		test.AudioTestSoundCollection();
+		//test.AudioTestLoop();
+		//test.AudioTestMovement();
+		//test.AudioTestPitch();
+		//test.AudioTestSoundCollection();
+		test.AudioTestRPM();
 		
 		test.finish();
 	}
@@ -89,6 +91,61 @@ public class AudioTest {
 		}
 		
 		soundSources.get("bounce").stop();
+		
+		System.out.println("Done!");
+	}
+	
+	private void AudioTestPitch() {
+		System.out.println("Starting sound pitch test");
+		
+		soundSources.get("bounce").play();
+		
+		int counter = 0, dT = 10;
+		float pitch = 0.5f;
+		while (counter < 5000) {
+			pitch = (counter/5000f)+0.5f;
+			soundSources.get("bounce").setPitch(pitch);
+			
+			try {Thread.sleep(dT);} 
+			catch (InterruptedException e) {}
+			
+			counter += dT;
+		}
+		
+		soundSources.get("bounce").stop();
+		
+		System.out.println("Done!");
+	}
+	
+	private void AudioTestRPM() {
+		System.out.println("Starting RPM Test");
+		
+		SoundCollection.initializeSounds();
+		
+		SoundCollection.play(SoundEvent.ENGINE_1_LOW);
+		SoundCollection.play(SoundEvent.ENGINE_1_MED);
+		SoundCollection.play(SoundEvent.ENGINE_1_HIGH);
+		SoundCollection.play(SoundEvent.ENGINE_1_MAX);
+		
+		float rpm = 500, dT = 1;
+		while (rpm < 2700) {
+			SoundCollection.setRPM(rpm);
+			
+			try {Thread.sleep((int)dT * 5);} 
+			catch (InterruptedException e) {}
+			
+			rpm += dT;
+		}
+		
+		try {Thread.sleep(5000);} 
+		catch (InterruptedException e) {}
+		
+		SoundCollection.stop(SoundEvent.ENGINE_1_LOW);
+		SoundCollection.stop(SoundEvent.ENGINE_1_MED);
+		SoundCollection.stop(SoundEvent.ENGINE_1_HIGH);
+		SoundCollection.stop(SoundEvent.ENGINE_1_MAX);
+		
+		SoundCollection.cleanUp();
 		
 		System.out.println("Done!");
 	}
