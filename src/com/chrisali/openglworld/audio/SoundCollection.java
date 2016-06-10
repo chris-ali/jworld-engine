@@ -13,6 +13,14 @@ import org.lwjgl.util.vector.Vector3f;
  *
  */
 public class SoundCollection {
+	
+	/**
+	 * Inner enums used to identify {@link SoundSource} objects in the soundSources
+	 * EnumMap 
+	 * 
+	 * @author Christopher Ali
+	 *
+	 */
 	public static enum SoundEvent {
 		BOUNCE,
 		BOUNCE_LOOP,
@@ -21,6 +29,10 @@ public class SoundCollection {
 		ENGINE_1_MED,
 		ENGINE_1_HIGH,
 		ENGINE_1_MAX,
+		ENGINE_2_LOW,
+		ENGINE_2_MED,
+		ENGINE_2_HIGH,
+		ENGINE_2_MAX,
 		FLAPS,
 		GEAR,
 		STALL,
@@ -49,22 +61,27 @@ public class SoundCollection {
 		soundSources.put(SoundEvent.ENGINE_1_LOW, new SoundSource("Audio", "engineLow"));
 		soundSources.get(SoundEvent.ENGINE_1_LOW).setVolume(0);
 		soundSources.get(SoundEvent.ENGINE_1_LOW).setLooping(true);
+		soundSources.get(SoundEvent.ENGINE_1_LOW).play();
 		
 		soundSources.put(SoundEvent.ENGINE_1_MED, new SoundSource("Audio", "engineMed"));
 		soundSources.get(SoundEvent.ENGINE_1_MED).setVolume(0);
 		soundSources.get(SoundEvent.ENGINE_1_MED).setLooping(true);
+		soundSources.get(SoundEvent.ENGINE_1_MED).play();
 		
 		soundSources.put(SoundEvent.ENGINE_1_HIGH, new SoundSource("Audio", "engineHigh"));
 		soundSources.get(SoundEvent.ENGINE_1_HIGH).setVolume(0);
 		soundSources.get(SoundEvent.ENGINE_1_HIGH).setLooping(true);
+		soundSources.get(SoundEvent.ENGINE_1_HIGH).play();
 		
 		soundSources.put(SoundEvent.ENGINE_1_MAX, new SoundSource("Audio", "engineMax"));
 		soundSources.get(SoundEvent.ENGINE_1_MAX).setVolume(0);
 		soundSources.get(SoundEvent.ENGINE_1_MAX).setLooping(true);
-		
+		soundSources.get(SoundEvent.ENGINE_1_MAX).play();
+
 		//================================ Systems =========================================
 		
 		soundSources.put(SoundEvent.FLAPS, new SoundSource("Audio", "flap"));
+		soundSources.get(SoundEvent.FLAPS).setLooping(true);
 		soundSources.get(SoundEvent.FLAPS).setVolume(0.25f);
 		
 		soundSources.put(SoundEvent.GEAR, new SoundSource("Audio", "gear"));
@@ -83,6 +100,7 @@ public class SoundCollection {
 		soundSources.put(SoundEvent.WIND, new SoundSource("Audio", "wind"));
 		soundSources.get(SoundEvent.WIND).setVolume(0.25f);
 		soundSources.get(SoundEvent.WIND).setLooping(true);
+		soundSources.get(SoundEvent.WIND).play();
 		
 		// Add new sounds here; can set looping/position properties etc
 	}
@@ -104,10 +122,10 @@ public class SoundCollection {
 	 * Plays sound for a specified control deflection if the difference between the received value (control)
 	 * and the previously received value is greater than 0, indicating a change in deflection over the integration step
 	 * 
-	 * @param control
 	 * @param event
+	 * @param control
 	 */
-	public static void setControl(float control, SoundEvent event) {
+	public static void setControl(SoundEvent event, float control) {
 		if ((Math.abs(control-previousControlValue) > 0) && !soundSources.get(event).isPlaying())
 			soundSources.get(event).play();
 		
